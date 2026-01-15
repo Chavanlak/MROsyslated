@@ -75,17 +75,18 @@ class StatustrackingRepository
         return Statustracking::all();
     }
     //one many relation เพื่อดึงสถานะล่าสุดของ notirepair
-    public static function updateNotiStatus($notirepaitid, $status, $statusDate)
+    public static function updateNotiStatus($notirepaitid, $status, $statusDate,$staffcode,$staffname)
     {
         $statustracking = new Statustracking();
         $statustracking->NotirepairId = $notirepaitid;
         $statustracking->status = $status;
         // $statustracking->statusDate = $statusDate;
+        //15/1 เพิ่มการเก็บ staff ปิดงาน
+        $statustracking->staffcode = $staffcode;
+        $statustracking->staffname = $staffname;
         $statustracking->StatusDate = Carbon::now();
         // $statustracking->statustrackingId;
         $statustracking->save();
-       
-
         return $statustracking;
     }
 

@@ -3,31 +3,24 @@
 
 @section('content')
 <style>
-    /* ปรับแต่งหัวตารางและข้อมูลให้ดูเป็นระเบียบ */
+    /* บังคับหัวตารางให้อยู่ตรงกลางและไม่ตัดบรรทัด */
     #officeTrackingTable thead th {
-        background-color: #f8f9fa;
-        color: #333;
-        font-weight: 600;
         text-align: center !important;
-        vertical-align: middle;
-        border-bottom: 2px solid #dee2e6;
+        vertical-align: middle !important;
         white-space: nowrap;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
-
-    /* ปรับปรุงความสวยงามของสถานะและตัวอักษรเล็ก */
+    /* ปรับแต่งความละเอียดของข้อมูลวันที่และชื่อ */
+    .datetime-box {
+        line-height: 1.2;
+    }
     .extra-small {
         font-size: 0.72rem;
-        line-height: 1;
     }
-
-    .badge-status {
-        min-width: 100px;
-        font-weight: 500;
-    }
-
-    /* ให้ DataTable แสดงผลเต็มความกว้างและจัดการช่องว่าง */
-    .dataTables_wrapper .dataTables_filter {
-        display: none; /* ซ่อนช่องค้นหาของ DataTable เพราะเราใช้ Form ด้านบนแล้ว */
+    .table-hover tbody tr:hover {
+        background-color: rgba(13, 110, 253, 0.05);
     }
 </style>
 
@@ -37,16 +30,16 @@
         <h5 class="fw-bold text-dark mb-0">
             <i class="bi bi-list-task text-primary me-2"></i> ตารางติดตามงาน (ธุรการ)
         </h5>
-        {{-- <button class="btn btn-outline-secondary btn-sm shadow-sm" onclick="location.reload()">
+        <button class="btn btn-outline-secondary btn-sm shadow-sm" onclick="location.reload()">
             <i class="bi bi-arrow-clockwise"></i> รีเฟรช
-        </button> --}}
+        </button>
     </div>
 
     {{-- Summary Cards --}}
     <div class="row g-3 mb-4">
         <div class="col-6 col-md-3">
             <div class="card border-0 shadow-sm" style="border-radius: 12px;">
-                <div class="card-body p-3 text-center text-md-start">
+                <div class="card-body p-3">
                     <small class="text-muted d-block">งานทั้งหมด</small>
                     <span class="h5 fw-bold">{{ number_format($totalCount) }}</span>
                 </div>
@@ -54,8 +47,8 @@
         </div>
         <div class="col-6 col-md-3">
             <div class="card border-0 shadow-sm" style="border-radius: 12px; border-left: 4px solid #ffc107;">
-                <div class="card-body p-3 text-center text-md-start">
-                    <small class="text-muted d-block text-warning">รอดำเนินการ</small>
+                <div class="card-body p-3">
+                    <small class="text-muted d-block">รอดำเนินการ</small>
                     <span class="h5 fw-bold text-warning">{{ number_format($pendingCount) }}</span>
                 </div>
             </div>
@@ -98,9 +91,9 @@
         <div class="card-body p-0">
             <div class="table-responsive">
                 <table id="officeTrackingTable" class="table table-hover align-middle mb-0 w-100">
-                    <thead>
+                    <thead class="table-primary">
                         <tr>
-                            <th>JobId</th>
+                            <th class="ps-3">JobId</th>
                             <th>สาขา</th>
                             <th class="text-start">อุปกรณ์</th>
                             <th>สถานะปัจจุบัน</th>
@@ -108,7 +101,7 @@
                             <th>ผู้รับของ</th>
                             <th>อัปเดตล่าสุด</th>
                             <th>วันที่ปิดงาน/โดย</th>
-                            <th class="text-center" style="width: 50px;">Action</th>
+                            <th style="width: 50px;">Action</th>
                         </tr>
                     </thead>
                     <tbody class="text-center">
@@ -126,9 +119,9 @@
                                 };
                             @endphp
                             <tr>
-                                <td class="fw-bold text-primary">#{{ $job->JobId ?? $job->NotirepairId }}</td>
+                                <td class="ps-3 fw-bold text-primary">#{{ $job->JobId ?? $job->NotirepairId }}</td>
                                 <td>
-                                    <span class="badge rounded-pill bg-secondary bg-opacity-10 text-secondary border border-secondary extra-small px-2">
+                                    <span class="badge rounded-pill bg-secondary bg-opacity-10 text-secondary border border-secondary small">
                                         {{ $job->branchCode }}
                                     </span>
                                 </td>
@@ -138,40 +131,47 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <span class="badge badge-status bg-{{ $statusStyle['bg'] }} text-{{ $statusStyle['text'] }} shadow-sm">
+                                    <span class="badge bg-{{ $statusStyle['bg'] }} text-{{ $statusStyle['text'] }} shadow-sm extra-small">
                                         <i class="{{ $statusStyle['icon'] }} me-1"></i> {{ $currentStatus }}
                                     </span>
                                 </td>
                                 <td>
                                     @if ($job->received_at)
-                                        <div class="small">{{ date('d/m/Y', strtotime($job->received_at)) }}</div>
-                                        <div class="text-muted extra-small">{{ date('H:i', strtotime($job->received_at)) }}</div>
+                                        <div class="datetime-box small">
+                                            <div class="fw-bold">{{ date('d/m/Y', strtotime($job->received_at)) }}</div>
+                                            <div class="text-muted extra-small">{{ date('H:i', strtotime($job->received_at)) }}</div>
+                                        </div>
                                     @else
                                         <span class="text-muted small">-</span>
                                     @endif
                                 </td>
                                 <td class="small">{{ $job->receiver_name ?? '-' }}</td>
                                 <td>
-                                    <div class="small">{{ $job->last_update ? date('d/m/Y', strtotime($job->last_update)) : '-' }}</div>
-                                    <div class="text-muted extra-small">{{ $job->last_update ? date('H:i', strtotime($job->last_update)) : '' }}</div>
+                                    <div class="datetime-box small">
+                                        <div class="text-dark">{{ $job->last_update ? date('d/m/Y', strtotime($job->last_update)) : '-' }}</div>
+                                        <div class="text-muted extra-small">{{ $job->last_update ? date('H:i', strtotime($job->last_update)) : '' }}</div>
+                                    </div>
                                 </td>
                                 <td>
                                     @if ($job->closedJobs !== 'ยังไม่ปิดงาน')
-                                        <div class="text-success fw-bold small">{{ date('d/m/Y', strtotime($job->DateCloseJobs)) }}</div>
-                                        <div class="text-muted extra-small">
-                                            <i class="bi bi-person-check"></i> {{ Str::limit($job->closer_name, 12) }}
+                                        <div class="datetime-box">
+                                            <div class="text-success fw-bold small">{{ date('d/m/Y', strtotime($job->DateCloseJobs)) }}</div>
+                                            <div class="text-muted extra-small">
+                                                <i class="bi bi-person-check"></i> {{ Str::limit($job->closer_name, 12) }}
+                                            </div>
                                         </div>
                                     @else
                                         <span class="badge bg-light text-muted fw-normal border extra-small">ยังไม่ปิดงาน</span>
                                     @endif
                                 </td>
-                                <td class="text-center">
-                                    <button class="btn btn-sm btn-outline-primary border-0" title="ดูรายละเอียด">
-                                        <i class="bi bi-eye-fill"></i>
+                                <td>
+                                    <button class="btn btn-sm btn-light border text-primary" title="ดูรายละเอียด">
+                                        <i class="bi bi-search"></i>
                                     </button>
                                 </td>
                             </tr>
                         @empty
+                            {{-- DataTable handles empty through config --}}
                         @endforelse
                     </tbody>
                 </table>
@@ -192,24 +192,21 @@
                         </div>
                         <span class="badge bg-light text-dark border">{{ $job->branchCode }}</span>
                     </div>
-
                     <div class="mb-2 small">
-                        <span class="text-muted">สถานะ:</span> <span class="fw-bold text-dark">{{ $job->current_status }}</span>
+                        <span class="text-muted">สถานะ:</span> <span class="fw-bold">{{ $job->current_status }}</span>
                     </div>
-
                     <div class="p-2 mb-2 bg-light rounded-3 extra-small">
                         <div class="d-flex justify-content-between mb-1">
                             <span class="text-muted">ผู้รับของ:</span>
                             <span class="text-dark fw-medium">{{ $job->receiver_name ?? '-' }}</span>
                         </div>
                         @if ($job->closedJobs !== 'ยังไม่ปิดงาน')
-                            <div class="d-flex justify-content-between border-top pt-1 mt-1">
+                            <div class="d-flex justify-content-between">
                                 <span class="text-muted">ผู้ปิดงาน:</span>
-                                <span class="text-dark fw-medium">{{ $job->closer_name ?? '-' }}</span>
+                                <span class="text-success fw-medium">{{ $job->closer_name ?? '-' }}</span>
                             </div>
                         @endif
                     </div>
-
                     <div class="row g-0 pt-2 border-top text-center">
                         <div class="col-6 border-end">
                             <small class="text-muted d-block extra-small">อัปเดตล่าสุด</small>
@@ -217,11 +214,9 @@
                         </div>
                         <div class="col-6">
                             <small class="text-muted d-block extra-small">วันที่ปิดงาน</small>
-                            @if ($job->closedJobs !== 'ยังไม่ปิดงาน')
-                                <small class="text-success fw-bold">{{ date('d/m/y', strtotime($job->DateCloseJobs)) }}</small>
-                            @else
-                                <small class="text-danger fw-bold">ยังไม่ปิดงาน</small>
-                            @endif
+                            <small class="{{ $job->closedJobs !== 'ยังไม่ปิดงาน' ? 'text-success' : 'text-danger' }} fw-bold">
+                                {{ $job->closedJobs !== 'ยังไม่ปิดงาน' ? date('d/m/y', strtotime($job->DateCloseJobs)) : 'ยังไม่ปิดงาน' }}
+                            </small>
                         </div>
                     </div>
                 </div>
@@ -240,24 +235,24 @@
 @push('scripts')
 <script>
 $(document).ready(function() {
-    // เรียกใช้งาน DataTable เมื่ออยู่บนหน้าจอ Desktop
     if ($('#officeTrackingTable').length > 0 && window.innerWidth >= 768) {
-        var table = $('#officeTrackingTable').DataTable({
-            "paging": false,       // ใช้ Laravel Pagination แทน
-            "info": false,         // ซ่อนข้อมูลจำนวนรายการ (เพราะเรามี Summary Card แล้ว)
-            "searching": false,    // ซ่อนช่องค้นหา (เราใช้ Form ด้านบน)
-            "ordering": true,      // เปิดใช้งานการเรียงลำดับ
-            "order": [[6, "desc"]], // ตั้งต้นให้เรียงจาก อัปเดตล่าสุด
+        $('#officeTrackingTable').DataTable({
+            "paging": false,
+            "info": false,
+            "searching": false,
+            "ordering": true,
+            "order": [[6, "desc"]], // เรียงตาม "อัปเดตล่าสุด"
             "autoWidth": false,
             "responsive": true,
             "language": {
                 "emptyTable": "ไม่พบข้อมูลรายการแจ้งซ่อม",
                 "zeroRecords": "ไม่พบข้อมูลที่ตรงกัน"
-            }
+            },
+            "columnDefs": [
+                { "orderable": false, "targets": 8 }, // ปิด Sort Action
+                { "className": "text-center", "targets": [0,1,3,4,5,6,7] }
+            ]
         });
-
-        // บังคับให้หัวตารางที่ถูกสร้างใหม่โดย DataTable มีการจัดวางที่ถูกต้อง
-        $('#officeTrackingTable thead th').addClass('text-center align-middle');
     }
 });
 </script>

@@ -13,7 +13,7 @@
 
     @if (session('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
-            {{ session('success') }}
+            {{session('success')}}
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     @endif
@@ -55,20 +55,20 @@
                             {{-- ส่วนที่ปรับปรุง: รหัส JobId แบบอักษรปกติ สีฟ้า --}}
                             <td>
                                 <span class="text-primary fw-bold" style="font-size: 0.85rem;">
-                                    #{{ $item->JobId ?? $item->NotirepairId }}
+                                    #{{$item->JobId ?? $item->NotirepairId}}
                                 </span>
                             </td>
 
-                            <td class="fw-bold">{{ $item->equipmentName }}</td>
+                            <td class="fw-bold">{{$item->equipmentName}}</td>
 
                             <td class="text-start small">
-                                <div class="text-truncate" style="max-width: 220px;" title="{{ $item->DeatailNotirepair }}">
-                                    {{ $item->DeatailNotirepair }}
+                                <div class="text-truncate" style="max-width: 220px;" title="{{$item->DeatailNotirepair}}">
+                                    {{$item->DeatailNotirepair}}
                                 </div>
                             </td>
 
                             <td>
-                                <div class="fw-bold text-dark">{{ $item->branchCode }}</div>
+                                <div class="fw-bold text-dark">{{$item->branchCode}}</div>
                                 <div class="small text-muted">เอสพลานาด</div>
                             </td>
 
@@ -116,17 +116,34 @@
                                                 <i class="bi bi-box-seam me-1"></i> รับของ
                                             </button>
                                         </form>
+                                    @elseif($status === 'รับของแล้ว')
+                                         <a href="{{ route('noti.show_update_form', $item->NotirepairId) }}"
+                                            class="btn btn-warning btn-sm" title="อัปเดตสถานะ">
+                                            <i class="bi bi-pencil-square"></i> อัปเดต
+                                        </a>
+                            
+                                    @elseif($status === 'ซ่อมงานเสร็จแล้ว | ช่างStore')
+                                        <a href="{{ route('noti.edit', $item->NotirepairId) }}"
+                                            class="btn btn-primary btn-sm fw-bold">
+                                            <i class="bi bi-pencil"></i> แก้ไข
+                                        </a>
+                                    @elseif($status === 'ซ่อมงานเสร็จแล้ว | Supplier')
+                                        <a href="{{ route('noti.edit', $item->NotirepairId) }}"
+                                            class="btn btn-primary btn-sm fw-bold">
+                                            <i class="bi bi-pencil"></i> แก้ไข
+                                        </a>
+                            
                                     @else
                                         {{-- ถ้าได้รับของแล้ว จะแสดงปุ่ม อัปเดต และ แก้ไข --}}
                                         @if (!$isCompleted)
                                             <a href="{{ route('noti.show_update_form', $item->NotirepairId) }}"
-                                               class="btn btn-warning btn-sm" title="อัปเดตสถานะ">
+                                                class="btn btn-warning btn-sm" title="อัปเดตสถานะ">
                                                 <i class="bi bi-pencil-square"></i> อัปเดต
                                             </a>
                                         @endif
                             
                                         <a href="{{ route('noti.edit', $item->NotirepairId) }}"
-                                           class="btn btn-primary btn-sm fw-bold">
+                                            class="btn btn-primary btn-sm fw-bold">
                                             <i class="bi bi-pencil"></i> แก้ไข
                                         </a>
                                     @endif

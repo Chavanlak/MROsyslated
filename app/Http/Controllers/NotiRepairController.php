@@ -121,16 +121,16 @@ class NotiRepairController extends Controller
         }
         Session::forget('submission_token');
         // 🛑 1. ดึง Branch Code จาก Session ก่อนบันทึก
-        $userBranchCode = $req->input('branchCode'); 
-    
+        $userBranchCode = $req->input('branchCode');
+
         if (empty($userBranchCode)) {
             // จัดการกรณีที่ไม่พบรหัสสาขา
             // หากโค้ดมาถึงตรงนี้ แสดงว่าค่า $req->input('branchCode') เป็น null
-            return redirect()->back()->with('error', 'ไม่พบรหัสสาขาในระบบ กรุณาล็อกอินใหม่'); 
+            return redirect()->back()->with('error', 'ไม่พบรหัสสาขาในระบบ กรุณาล็อกอินใหม่');
         }
-        
+
         // บันทึกข้อมูล (โดยใช้ $userBranchCode ที่ได้มาจากการแก้ไขข้างต้น)
-        $noti = NotirepairRepository::saveNotiRepair($req->category, $req->detail, $req->email2, $req->email1,$userBranchCode);
+        $noti = NotirepairRepository::saveNotiRepair($req->category, $req->detail, $req->email2, $req->email1, $userBranchCode);
         // if ($noti) { // ตรวจสอบให้แน่ใจว่าเป็น Model instance จริงๆ
         //     $noti->branch_code = $userBranchCode;
         //     $noti->save();
@@ -227,7 +227,7 @@ class NotiRepairController extends Controller
         $dailyCount = Notirepair::whereDate('DateNotirepair', $today)->count();
         $paddedId = str_pad($dailyCount, 3, '0', STR_PAD_LEFT);
         // $subjectname = "เเจ้งปัญหา #MRO-" . $branchCode . "-" . $dateNotirepair . "-" . $paddedId;
-        $JobId = "MRO-".$branchCode. "-" . $dateNotirepair . "-" . $paddedId;
+        $JobId = "MRO-" . $branchCode . "-" . $dateNotirepair . "-" . $paddedId;
         $noti->JobId = $JobId;
         $noti->save();
         $subjectname = "แจ้งปัญหา #" . $JobId;
@@ -314,53 +314,53 @@ class NotiRepairController extends Controller
     //     }
     // }
     public static function checkNotiRepair(Request $request)
-{
-    $role = Session::get('role');
-    if ($role === 'AdminTechnicianStore') {
-        $searchTerm = $request->input('search');
+    {
+        $role = Session::get('role');
+        if ($role === 'AdminTechnicianStore') {
+            $searchTerm = $request->input('search');
 
-        // 1. หา ID สถานะล่าสุด
-        $latestStatusId = DB::connection('third')
-            ->table('statustracking')
-            ->select('NotirepairId', DB::raw('MAX(statustrackingId) as latest_id'))
-            ->groupBy('NotirepairId');
+            // 1. หา ID สถานะล่าสุด
+            $latestStatusId = DB::connection('third')
+                ->table('statustracking')
+                ->select('NotirepairId', DB::raw('MAX(statustrackingId) as latest_id'))
+                ->groupBy('NotirepairId');
 
-        $query = NotiRepair::select(
-            'notirepair.*',
-            DB::raw("COALESCE(latest_status.status, 'ยังไม่ได้รับของ') as status"),
-            'latest_status.statusDate as statusDate',
-            'equipment.equipmentName as equipmentName'
-        )
-        ->leftJoin('equipment', 'equipment.equipmentId', '=', 'notirepair.equipmentId')
-        // แก้ไข: นำ orderBy ออกจากฟังก์ชัน Join
-        ->leftJoinSub($latestStatusId, 'latest_id_table', function ($join) {
-            $join->on('notirepair.NotirepairId', '=', 'latest_id_table.NotirepairId');
-        })
-        ->leftJoin(
-            DB::raw(env('THIRD_DB_DATABASE') . '.statustracking as latest_status'),
-            function ($join) {
-                $join->on('latest_status.NotirepairId', '=', 'notirepair.NotirepairId')
-                    ->on('latest_status.statustrackingId', '=', 'latest_id_table.latest_id');
+            $query = NotiRepair::select(
+                'notirepair.*',
+                DB::raw("COALESCE(latest_status.status, 'ยังไม่ได้รับของ') as status"),
+                'latest_status.statusDate as statusDate',
+                'equipment.equipmentName as equipmentName'
+            )
+                ->leftJoin('equipment', 'equipment.equipmentId', '=', 'notirepair.equipmentId')
+                // แก้ไข: นำ orderBy ออกจากฟังก์ชัน Join
+                ->leftJoinSub($latestStatusId, 'latest_id_table', function ($join) {
+                    $join->on('notirepair.NotirepairId', '=', 'latest_id_table.NotirepairId');
+                })
+                ->leftJoin(
+                    DB::raw(env('THIRD_DB_DATABASE') . '.statustracking as latest_status'),
+                    function ($join) {
+                        $join->on('latest_status.NotirepairId', '=', 'notirepair.NotirepairId')
+                            ->on('latest_status.statustrackingId', '=', 'latest_id_table.latest_id');
+                    }
+                )
+                // 2. เรียงลำดับจากวันที่ล่าสุด (DateNotirepair DESC)
+                ->orderBy('notirepair.DateNotirepair', 'desc');
+
+            // 3. Search Logic
+            if ($searchTerm) {
+                $query->where(function ($q) use ($searchTerm) {
+                    $q->where('notirepair.NotirepairId', 'like', "%$searchTerm%")
+                        ->orWhere('notirepair.JobId', 'like', "%$searchTerm%")
+                        ->orWhere('equipment.equipmentName', 'like', "%$searchTerm%")
+                        ->orWhere('notirepair.branchCode', 'like', "%$searchTerm%")
+                        ->orWhere('latest_status.status', 'like', "%$searchTerm%");
+                });
             }
-        )
-        // 2. เรียงลำดับจากวันที่ล่าสุด (DateNotirepair DESC)
-        ->orderBy('notirepair.DateNotirepair', 'desc'); 
 
-        // 3. Search Logic
-        if ($searchTerm) {
-            $query->where(function ($q) use ($searchTerm) {
-                $q->where('notirepair.NotirepairId', 'like', "%$searchTerm%")
-                  ->orWhere('notirepair.JobId', 'like', "%$searchTerm%")
-                  ->orWhere('equipment.equipmentName', 'like', "%$searchTerm%")
-                  ->orWhere('notirepair.branchCode', 'like', "%$searchTerm%")
-                  ->orWhere('latest_status.status', 'like', "%$searchTerm%");
-            });
+            $noti = $query->paginate(10)->withQueryString(); // ปรับเป็น 10 รายการต่อหน้าเพื่อให้เห็นงานเยอะขึ้น
+            return view('dashborad.notirepairlist', compact('noti'));
         }
-
-        $noti = $query->paginate(10)->withQueryString(); // ปรับเป็น 10 รายการต่อหน้าเพื่อให้เห็นงานเยอะขึ้น
-        return view('dashborad.notirepairlist', compact('noti'));
     }
-}
     public static function reciveNotirepair($notirepaitid)
     {
         $recivenoti = NotiRepairRepository::getNotirepirById($notirepaitid);
@@ -375,7 +375,7 @@ class NotiRepairController extends Controller
     // return redirect()->route('noti.show_update_form', ['notirepaitid' => $notirepaitid])
     //         ->with('success', 'รับเรื่องเรียบร้อยแล้ว! เข้าสู่หน้าอัพเดตสถานะ');
     // }
-    
+
     //front ล่าสุด 13/1/69///
     public function acceptNotisRepair(Request $request, $notirepaitid)
     {
@@ -405,7 +405,7 @@ class NotiRepairController extends Controller
                 'NotirepairId' => $notirepaitid,
                 'status' => 'ได้รับของแล้ว',
                 'staffcode' => Session::get('staffcode'),
-                'staffname'=> Session::get('staffname'),
+                'staffname' => Session::get('staffname'),
                 'statusDate' => Carbon::now(),
                 // 'created_at' => Carbon::now(),
                 // 'updated_at' => Carbon::now(),
@@ -413,63 +413,62 @@ class NotiRepairController extends Controller
 
         // return redirect()->back()->with('success', 'รายการแจ้งซ่อมรหัส ' . $notirepaitid . ' ได้รับเรื่องเรียบร้อยแล้ว');
         return redirect()->back()->with('success', 'รายการแจ้งซ่อมรหัส ' . $JobId . ' ได้รับเรื่องเรียบร้อยแล้ว');
-
     }
 
-// ฟังก์ชันสำหรับหน้าร้านกดรับของคืนจากช่าง
-// public function acceptNotisRepair(Request $request, $notirepaitid)
-// {
-//     $noti = NotiRepair::find($notirepaitid);
-//     if (!$noti) return redirect()->back()->with('error', 'ไม่พบรายการ');
+    // ฟังก์ชันสำหรับหน้าร้านกดรับของคืนจากช่าง
+    // public function acceptNotisRepair(Request $request, $notirepaitid)
+    // {
+    //     $noti = NotiRepair::find($notirepaitid);
+    //     if (!$noti) return redirect()->back()->with('error', 'ไม่พบรายการ');
 
-//     // ตรวจสอบว่าช่างซ่อมเสร็จหรือยังก่อนจะให้กดรับ
-//     $currentStatus = DB::connection('third')
-//         ->table('statustracking')
-//         ->where('NotirepairId', $notirepaitid)
-//         ->orderByDesc('statustrackingId')
-//         ->value('status');
+    //     // ตรวจสอบว่าช่างซ่อมเสร็จหรือยังก่อนจะให้กดรับ
+    //     $currentStatus = DB::connection('third')
+    //         ->table('statustracking')
+    //         ->where('NotirepairId', $notirepaitid)
+    //         ->orderByDesc('statustrackingId')
+    //         ->value('status');
 
-//     if (!str_contains($currentStatus, 'ซ่อมงานเสร็จแล้ว')) {
-//         return redirect()->back()->with('error', 'ไม่สามารถรับของได้ เนื่องจากช่างยังซ่อมไม่เสร็จ');
-//     }
+    //     if (!str_contains($currentStatus, 'ซ่อมงานเสร็จแล้ว')) {
+    //         return redirect()->back()->with('error', 'ไม่สามารถรับของได้ เนื่องจากช่างยังซ่อมไม่เสร็จ');
+    //     }
 
-//     // บันทึกว่าหน้าร้านรับคืนแล้ว
-//     DB::connection('third')->table('statustracking')->insert([
-//         'NotirepairId' => $notirepaitid,
-//         'status' => 'ได้รับของคืนเรียบร้อย',
-//         'staffcode' => Session::get('staffcode'),
-//         'staffname' => Session::get('staffname'),
-//         'statusDate' => Carbon::now(),
-//     ]);
+    //     // บันทึกว่าหน้าร้านรับคืนแล้ว
+    //     DB::connection('third')->table('statustracking')->insert([
+    //         'NotirepairId' => $notirepaitid,
+    //         'status' => 'ได้รับของคืนเรียบร้อย',
+    //         'staffcode' => Session::get('staffcode'),
+    //         'staffname' => Session::get('staffname'),
+    //         'statusDate' => Carbon::now(),
+    //     ]);
 
-//     return redirect()->back()->with('success', 'ยืนยันรับอุปกรณ์คืนรหัส ' . $noti->JobId . ' เรียบร้อย');
-// }
+    //     return redirect()->back()->with('success', 'ยืนยันรับอุปกรณ์คืนรหัส ' . $noti->JobId . ' เรียบร้อย');
+    // }
 
-// // ฟังก์ชันปิดงาน (Closed Job)
-// public function closedJobs(Request $request, $notirepairid)
-// {
-//     $currentStatus = NotirepairRepository::getCurrentStatus($notirepairid);
-    
-//     // ต้องผ่านสถานะ "ได้รับของคืนเรียบร้อย" ก่อนเท่านั้นถึงจะปิดงานได้
-//     if ($currentStatus !== 'ได้รับของคืนเรียบร้อย') {
-//         return redirect()->back()->with('error', 'กรุณากดยืนยันการรับของคืนก่อนปิดงาน');
-//     }
+    // // ฟังก์ชันปิดงาน (Closed Job)
+    // public function closedJobs(Request $request, $notirepairid)
+    // {
+    //     $currentStatus = NotirepairRepository::getCurrentStatus($notirepairid);
 
-//     try {
-//         DB::transaction(function () use ($notirepairid) {
-//             NotirepairRepository::closeJobInMainTable($notirepairid);
-//             NotirepairRepository::updateStatusTracking(
-//                 $notirepairid, 
-//                 'ปิดงานเรียบร้อย', 
-//                 Session::get('staffcode'), 
-//                 Session::get('staffname')
-//             );
-//         });
-//         return redirect()->back()->with('success', "ปิดงานเรียบร้อยแล้ว");
-//     } catch (\Exception $e) {
-//         return redirect()->back()->with('error', 'เกิดข้อผิดพลาด: ' . $e->getMessage());
-//     }
-// }
+    //     // ต้องผ่านสถานะ "ได้รับของคืนเรียบร้อย" ก่อนเท่านั้นถึงจะปิดงานได้
+    //     if ($currentStatus !== 'ได้รับของคืนเรียบร้อย') {
+    //         return redirect()->back()->with('error', 'กรุณากดยืนยันการรับของคืนก่อนปิดงาน');
+    //     }
+
+    //     try {
+    //         DB::transaction(function () use ($notirepairid) {
+    //             NotirepairRepository::closeJobInMainTable($notirepairid);
+    //             NotirepairRepository::updateStatusTracking(
+    //                 $notirepairid, 
+    //                 'ปิดงานเรียบร้อย', 
+    //                 Session::get('staffcode'), 
+    //                 Session::get('staffname')
+    //             );
+    //         });
+    //         return redirect()->back()->with('success', "ปิดงานเรียบร้อยแล้ว");
+    //     } catch (\Exception $e) {
+    //         return redirect()->back()->with('error', 'เกิดข้อผิดพลาด: ' . $e->getMessage());
+    //     }
+    // }
 
     // public static function closedJobs(Request $request,$notirepairid){
     //     $noti = NotirepairRepository::findById($notirepairid);
@@ -487,109 +486,154 @@ class NotiRepairController extends Controller
     // }
     //old
     //dashborad frontstaff การปิดงานของพนักงาน
-//     public function closedJobs(Request $request, $notirepairid)
-// {
-//     // 1. ค้นหาข้อมูลผ่าน Repo
-//     $noti = NotirepairRepository::findById($notirepairid);
-//     if (!$noti) {
-//         return redirect()->back()->with('error', 'ไม่พบรายการแจ้งซ่อม');
-//     }
+    //     public function closedJobs(Request $request, $notirepairid)
+    // {
+    //     // 1. ค้นหาข้อมูลผ่าน Repo
+    //     $noti = NotirepairRepository::findById($notirepairid);
+    //     if (!$noti) {
+    //         return redirect()->back()->with('error', 'ไม่พบรายการแจ้งซ่อม');
+    //     }
 
-//     // 2. เช็คสถานะปัจจุบัน
-//     $currentStatus = NotirepairRepository::getCurrentStatus($notirepairid);
-//     if ($currentStatus !== 'ได้รับของแล้ว') {
-//         return redirect()->back()->with('error', 'ไม่สามารถปิดงานได้ (ต้องได้รับของก่อน)');
-//     }
+    //     // 2. เช็คสถานะปัจจุบัน
+    //     $currentStatus = NotirepairRepository::getCurrentStatus($notirepairid);
+    //     if ($currentStatus !== 'ได้รับของแล้ว') {
+    //         return redirect()->back()->with('error', 'ไม่สามารถปิดงานได้ (ต้องได้รับของก่อน)');
+    //     }
 
-//     try {
-//         DB::transaction(function () use ($notirepairid) {
-//             // ✅ 3.1 อัปเดสตารางหลัก (ฟิลด์ closedJobs, DateCloseJobs)
-//             NotirepairRepository::closeJobInMainTable($notirepairid);
+    //     try {
+    //         DB::transaction(function () use ($notirepairid) {
+    //             // ✅ 3.1 อัปเดสตารางหลัก (ฟิลด์ closedJobs, DateCloseJobs)
+    //             NotirepairRepository::closeJobInMainTable($notirepairid);
 
-//             // ✅ 3.2 บันทึกประวัติใน statustracking
-//             NotirepairRepository::updateStatusTracking($notirepairid, 'ปิดงาน');
-//         });
+    //             // ✅ 3.2 บันทึกประวัติใน statustracking
+    //             NotirepairRepository::updateStatusTracking($notirepairid, 'ปิดงาน');
+    //         });
 
-//         return redirect()->back()->with('success', "ปิดงานรหัส $notirepairid และบันทึกข้อมูลลงฐานข้อมูลเรียบร้อยแล้ว");
+    //         return redirect()->back()->with('success', "ปิดงานรหัส $notirepairid และบันทึกข้อมูลลงฐานข้อมูลเรียบร้อยแล้ว");
 
-//     } catch (\Exception $e) {
-//         return redirect()->back()->with('error', 'เกิดข้อผิดพลาดในการบันทึกข้อมูล: ' . $e->getMessage());
-//     }
-// }
-//ล่าสุด 13/1/69
-public function closedJobs(Request $request, $notirepairid)
-{
-    // 1. ค้นหาข้อมูลผ่าน Repo
-    $noti = NotirepairRepository::findById($notirepairid);
-    if (!$noti) {
-        return redirect()->back()->with('error', 'ไม่พบรายการแจ้งซ่อม');
+    //     } catch (\Exception $e) {
+    //         return redirect()->back()->with('error', 'เกิดข้อผิดพลาดในการบันทึกข้อมูล: ' . $e->getMessage());
+    //     }
+    // }
+    //ล่าสุด 13/1/69
+    // public function closedJobs(Request $request, $notirepairid)
+    // {
+    //     // 1. ค้นหาข้อมูลผ่าน Repo
+    //     $noti = NotirepairRepository::findById($notirepairid);
+    //     if (!$noti) {
+    //         return redirect()->back()->with('error', 'ไม่พบรายการแจ้งซ่อม');
+    //     }
+
+    //     // 2. เช็คสถานะปัจจุบัน
+    //     $currentStatus = NotirepairRepository::getCurrentStatus($notirepairid);
+    //     if ($currentStatus !== 'ได้รับของแล้ว') {
+    //         return redirect()->back()->with('error', 'ไม่สามารถปิดงานได้ (ต้องได้รับของก่อน)');
+    //     }
+
+    //     // --- เพิ่ม: ดึงข้อมูลพนักงานจาก Session ---
+    //     $staffcode = Session::get('staffcode');
+    //     $staffname = Session::get('staffname');
+
+    //     try {
+    //         DB::transaction(function () use ($notirepairid, $staffcode, $staffname) {
+    //             // ✅ 3.1 อัปเดตตารางหลัก (ปิดงานเรียบร้อย)
+    //             NotirepairRepository::closeJobInMainTable($notirepairid);
+
+    //             // ✅ 3.2 บันทึกประวัติใน statustracking พร้อมชื่อพนักงาน
+    //             // เปลี่ยนจาก 'ปิดงาน' เป็น 'ปิดงานเรียบร้อย' เพื่อให้ตรงกับเงื่อนไขใน Blade
+    //             NotirepairRepository::updateStatusTracking($notirepairid, 'ปิดงานเรียบร้อย', $staffcode, $staffname);
+    //         });
+
+    //         return redirect()->back()->with('success', "ปิดงานรหัส $notirepairid เรียบร้อยแล้ว");
+
+    //     } catch (\Exception $e) {
+    //         return redirect()->back()->with('error', 'เกิดข้อผิดพลาดในการบันทึกข้อมูล: ' . $e->getMessage());
+    //     }
+    // }
+
+    //14/1
+    // public function closedJobs(Request $request, $notirepairid)
+    // {
+    //     // 1. ค้นหาข้อมูลผ่าน Repo
+    //     $noti = NotirepairRepository::findById($notirepairid);
+    //     if (!$noti) {
+    //         return redirect()->back()->with('error', 'ไม่พบรายการแจ้งซ่อม');
+    //     }
+
+    //     // 2. เช็คสถานะปัจจุบัน (ปรับปรุงเงื่อนไขตรงนี้)
+    //     $currentStatus = NotirepairRepository::getCurrentStatus($notirepairid);
+
+    //     // ตรวจสอบว่าสถานะต้องเป็น 'ได้รับของแล้ว' หรือมีคำว่า 'ซ่อมงานเสร็จแล้ว'
+    //     // $isValidStatus = ($currentStatus === 'ได้รับของแล้ว' || str_contains($currentStatus, 'ซ่อมงานเสร็จแล้ว'));
+    //     $isValidStatus = str_contains($currentStatus, 'ซ่อมงานเสร็จแล้ว');
+    //     if (!$isValidStatus) {
+    //         // return redirect()->back()->with('error', 'ไม่สามารถปิดงานได้ (สถานะปัจจุบันไม่ถูกต้อง)');
+    //         return redirect()->back()->with('error', 'ไม่สามารถรับของคืนได้ เนื่องจากช่างยังซ่อมไม่เสร็จ');
+    //     }
+
+    //     // ... ส่วนที่เหลือคงเดิม (DB Transaction) ...
+    //     $staffcode = Session::get('staffcode');
+    //     $staffname = Session::get('staffname');
+
+    //     try {
+    //         DB::transaction(function () use ($notirepairid, $staffcode, $staffname) {
+    //             NotirepairRepository::closeJobInMainTable($notirepairid);
+    //             NotirepairRepository::updateStatusTracking($notirepairid, 'ปิดงานเรียบร้อย', $staffcode, $staffname);
+    //         });
+
+    //         return redirect()->back()->with('success', "ปิดงานรหัส $notirepairid เรียบร้อยแล้ว");
+    //     } catch (\Exception $e) {
+    //         return redirect()->back()->with('error', 'เกิดข้อผิดพลาด: ' . $e->getMessage());
+    //     }
+    // }
+    //15/1
+    // NotiRepairController.php
+
+    public function closedJobs(Request $request, $notirepairid)
+    {
+        // 1. ค้นหาข้อมูลผ่าน Repo
+        $noti = NotirepairRepository::findById($notirepairid);
+        if (!$noti) {
+            return redirect()->back()->with('error', 'ไม่พบรายการแจ้งซ่อม');
+        }
+
+        // 2. เช็คสถานะปัจจุบัน (ปรับปรุงเงื่อนไขตรงนี้)
+        $currentStatus = NotirepairRepository::getCurrentStatus($notirepairid);
+
+        // ตรวจสอบว่าสถานะต้องเป็น 'ได้รับของแล้ว' หรือมีคำว่า 'ซ่อมงานเสร็จแล้ว'
+        // $isValidStatus = ($currentStatus === 'ได้รับของแล้ว' || str_contains($currentStatus, 'ซ่อมงานเสร็จแล้ว'));
+        $isValidStatus = str_contains($currentStatus, 'ซ่อมงานเสร็จแล้ว');
+        if (!$isValidStatus) {
+            // return redirect()->back()->with('error', 'ไม่สามารถปิดงานได้ (สถานะปัจจุบันไม่ถูกต้อง)');
+            return redirect()->back()->with('error', 'ไม่สามารถรับของคืนได้ เนื่องจากช่างยังซ่อมไม่เสร็จ');
+        }
+
+
+        $staffcode = Session::get('staffcode');
+        $staffname = Session::get('staffname');
+
+        try {
+            DB::transaction(function () use ($notirepairid, $staffcode, $staffname) {
+                // 1. อัปเดตตารางหลัก ให้เป็น 'ปิดงานเรียบร้อย' (รูปที่ 10)
+                NotirepairRepository::closeJobInMainTable($notirepairid);
+
+                // 2. บันทึกลงตาราง statustracking (ประวัติ)
+                // ✅ แนะนำให้ใช้ 'ได้รับของคืนเรียบร้อย' ให้ตรงกับ ENUM ในรูปที่ 9 ครับ
+                NotirepairRepository::updateStatusTracking(
+                    $notirepairid,
+                    'ได้รับของคืนเรียบร้อย',
+                    $staffcode,
+                    $staffname
+                );
+            });
+
+            return redirect()->back()->with('success', "ปิดงานรหัส $notirepairid เรียบร้อยแล้ว");
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'เกิดข้อผิดพลาด: ' . $e->getMessage());
+        }
     }
 
-    // 2. เช็คสถานะปัจจุบัน
-    $currentStatus = NotirepairRepository::getCurrentStatus($notirepairid);
-    if ($currentStatus !== 'ได้รับของแล้ว') {
-        return redirect()->back()->with('error', 'ไม่สามารถปิดงานได้ (ต้องได้รับของก่อน)');
-    }
-
-    // --- เพิ่ม: ดึงข้อมูลพนักงานจาก Session ---
-    $staffcode = Session::get('staffcode');
-    $staffname = Session::get('staffname');
-
-    try {
-        DB::transaction(function () use ($notirepairid, $staffcode, $staffname) {
-            // ✅ 3.1 อัปเดตตารางหลัก (ปิดงานเรียบร้อย)
-            NotirepairRepository::closeJobInMainTable($notirepairid);
-
-            // ✅ 3.2 บันทึกประวัติใน statustracking พร้อมชื่อพนักงาน
-            // เปลี่ยนจาก 'ปิดงาน' เป็น 'ปิดงานเรียบร้อย' เพื่อให้ตรงกับเงื่อนไขใน Blade
-            NotirepairRepository::updateStatusTracking($notirepairid, 'ปิดงานเรียบร้อย', $staffcode, $staffname);
-        });
-
-        return redirect()->back()->with('success', "ปิดงานรหัส $notirepairid เรียบร้อยแล้ว");
-
-    } catch (\Exception $e) {
-        return redirect()->back()->with('error', 'เกิดข้อผิดพลาดในการบันทึกข้อมูล: ' . $e->getMessage());
-    }
-}
-//new
-// public function closedJobs(Request $request, $notirepairid)
-// {
-//     $noti = NotirepairRepository::findById($notirepairid);
-//     if (!$noti) {
-//         return redirect()->back()->with('error', 'ไม่พบรายการแจ้งซ่อม');
-//     }
-
-//     // หา staffcode อย่างปลอดภัย
-//     if (session()->has('staff_code')) {
-//         $myStaffCode = session('staff_code');
-//     } elseif (auth()->check()) {
-//         $myStaffCode = auth()->user()->staffcode;
-//     } else {
-//         return redirect()->back()->with('error', 'ไม่พบรหัสพนักงาน กรุณาเข้าสู่ระบบใหม่');
-//     }
-
-//     try {
-//         DB::transaction(function () use ($notirepairid, $myStaffCode) {
-
-//             // 1. ปิดงานในตารางหลัก
-//             NotirepairRepository::closeJobInMainTable($notirepairid);
-
-//             // 2. บันทึกประวัติการปิดงาน
-//             DB::connection('third')->table('statustracking')->insert([
-//                 'NotirepairId' => $notirepairid,
-//                 'status'       => 'ปิดงานเรียบร้อย',
-//                 'staffcode'    => $myStaffCode,
-//                 'date_update'  => now()
-//             ]);
-//         });
-
-//         return redirect()->back()->with('success', 'ปิดงานเรียบร้อย');
-//     } catch (\Exception $e) {
-//         return redirect()->back()->with('error', 'ผิดพลาด: ' . $e->getMessage());
-//     }
-// }
-
-//dashbordAdminช่าง
+    //dashbordAdminช่าง
     public function showUpdateStatusForm($notirepaitid)
     {
         // ดึงข้อมูลการแจ้งซ่อมที่ต้องการอัพเดต
@@ -601,50 +645,56 @@ public function closedJobs(Request $request, $notirepairid)
         return view('dashborad.updatestatus', compact('updatenoti'));
     }
     //dashbordAdminช่าง
-public static function editUpdateNoti($notirepairid){
-    $updatenoti = StatustrackingRepository::getNotiDetails($notirepairid);
-    return view('dashborad.editnoti',compact('updatenoti'));
-}
+    public static function editUpdateNoti($notirepairid)
+    {
+        $updatenoti = StatustrackingRepository::getNotiDetails($notirepairid);
+        return view('dashborad.editnoti', compact('updatenoti'));
+    }
     //edit
     // ฟังก์ชันแสดงหน้าแก้ไขข้อมูล
-public function editNoti($notirepaitid)
-{
-    $noti = NotiRepair::find($notirepaitid);
-    if (!$noti) {
-        return redirect()->back()->with('error', 'ไม่พบรายการแจ้งซ่อม');
+    public function editNoti($notirepaitid)
+    {
+        $noti = NotiRepair::find($notirepaitid);
+        if (!$noti) {
+            return redirect()->back()->with('error', 'ไม่พบรายการแจ้งซ่อม');
+        }
+        return view('dashborad.editnoti', compact('noti')); // สร้างไฟล์ view นี้แยกต่างหาก
     }
-    return view('dashborad.editnoti', compact('noti')); // สร้างไฟล์ view นี้แยกต่างหาก
-}
 
-// ฟังก์ชันบันทึกการแก้ไข
-public function updateNotiData(Request $request)
-{
-    $noti = NotiRepair::find($request->NotirepairId);
-    if ($noti) {
-        $noti->equipmentName = $request->equipmentName;
-        $noti->DeatailNotirepair = $request->DeatailNotirepair;
-        // เพิ่มฟิลด์อื่นๆ ที่ต้องการให้แก้ได้
-        $noti->save();
+    // ฟังก์ชันบันทึกการแก้ไข
+    public function updateNotiData(Request $request)
+    {
+        $noti = NotiRepair::find($request->NotirepairId);
+        if ($noti) {
+            $noti->equipmentName = $request->equipmentName;
+            $noti->DeatailNotirepair = $request->DeatailNotirepair;
+            // เพิ่มฟิลด์อื่นๆ ที่ต้องการให้แก้ได้
+            $noti->save();
 
-        return redirect()->route('noti.list')->with('success', 'แก้ไขข้อมูลรหัส ' . ($noti->JobId ?? $noti->NotirepairId) . ' สำเร็จ');
+            return redirect()->route('noti.list')->with('success', 'แก้ไขข้อมูลรหัส ' . ($noti->JobId ?? $noti->NotirepairId) . ' สำเร็จ');
+        }
+        return redirect()->back()->with('error', 'เกิดข้อผิดพลาดในการแก้ไข');
     }
-    return redirect()->back()->with('error', 'เกิดข้อผิดพลาดในการแก้ไข');
-}
-//บันทึกการอัพเดทสถานะ
+    //บันทึกการอัพเดทสถานะ
     public function updateStatus(Request $request)
     {
+        $่jobId = $request->JobId;
         $notirepaitid = $request->NotirepairId;
         $statusData = $request->status;
         $statusDate = $request->statusDate;
         // $statusDate = Carbon::parse($request->statusDate)->format('d/m/Y'); //เดิมอันนี้เป็น เดือน/วัน/ปี
         // $statusDate = Carbon::createFromFormat('d/m/Y', $request->statusDate)->format('Y-m-d'); //เเต่ต้องมาพิมวันที่อยู่
         //status เป็นเเค่ชื่อที่ตั้งให้เหมือน name ใน html เเต่ตั้งชื่อให้เหมือน database
+        $staffcode = Session::get('staffcode');
+        $staffname = Session::get('staffname');
         // เรียกใช้ Repository เพื่ออัพเดตสถานะ
-        StatustrackingRepository::updateNotiStatus($notirepaitid, $statusData, $statusDate);
-
+        StatustrackingRepository::updateNotiStatus($notirepaitid, $statusData, $statusDate, $staffcode, $staffname);
+        $displayId = $่jobId ?: $notirepaitid;
         // เปลี่ยนเส้นทางกลับไปยังหน้ารายการแจ้งซ่อมพร้อมข้อความสำเร็จ
         return redirect()->route('noti.list')
-            ->with('success', 'อัพเดตสถานะเรียบร้อยแล้ว!');
+            // ->with('success', 'อัพเดตสถานะเรียบร้อยแล้ว!');
+            // ->with('success','อัพเดตสถานะรหัส'.' '.$displayId.' '.'เรียบร้อยเเล้ว!');
+            ->with('success', 'อัพเดตสถานะรหัส' . ' ' . $displayId . ' ' . 'เรียบร้อยเเล้ว!');
     }
     //dashbord frontstore
     public static function getStatusNotreciveItem($notirepairid)
@@ -783,15 +833,31 @@ public function updateNotiData(Request $request)
             return view('dashborad.storefront', compact('noti'));
         }
     }
+    public function receiveBack($NotirepairId)
+    {
+        try {
+            // บันทึกสถานะใหม่ลงในตาราง statustracking (DB ตัวที่สาม)
+            DB::connection('third')->table('statustracking')->insert([
+                'NotirepairId' => $NotirepairId,
+                'status' => 'ปิดงาน (พนักงานรับของคืนแล้ว)',
+                'statusDate' => now(),
+                'staffcode' => Session::get('staffcode'),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            return back()->with('success', 'ยืนยันการรับอุปกรณ์คืนเรียบร้อยแล้ว');
+        } catch (\Exception $e) {
+            return back()->with('error', 'เกิดข้อผิดพลาด: ' . $e->getMessage());
+        }
+    }
     public static function checkall()
     {
         $check = StatustrackingRepository::getAllStatustracking();
         return $check;
     }
     //dashbordofficer
-    public static function showState(){
-
-    }
+    public static function showState() {}
     //dashbord store 
     public static function NotiRepairHistory()
     {
@@ -826,117 +892,117 @@ public function updateNotiData(Request $request)
     //     $closedJob = StatustrackingRepository::closeedJobStatus();
     //     return view('',compact('closedJob'));
     // }
-  
+
     // }
- 
+
 
 
     // เพิ่มใน NotirepairRepository.php
 
-// public static function getTrackingListForAdmin($searchTerm = null, $perPage = 15)
-// {
-//     // 1. ดึง ID ล่าสุดของสถานะจากตาราง statustracking (DB ที่สาม)
-//     $latestStatusId = DB::connection('third')
-//         ->table('statustracking')
-//         ->select('NotirepairId', DB::raw('MAX(statustrackingId) as latest_id'))
-//         ->groupBy('NotirepairId');
+    // public static function getTrackingListForAdmin($searchTerm = null, $perPage = 15)
+    // {
+    //     // 1. ดึง ID ล่าสุดของสถานะจากตาราง statustracking (DB ที่สาม)
+    //     $latestStatusId = DB::connection('third')
+    //         ->table('statustracking')
+    //         ->select('NotirepairId', DB::raw('MAX(statustrackingId) as latest_id'))
+    //         ->groupBy('NotirepairId');
 
-//     // 2. Query หลัก
-//     $query = Notirepair::select(
-//             'notirepair.*',
-//             'equipment.equipmentName',
-//             DB::raw("COALESCE(latest_status.status, 'ยังไม่ได้รับของ') as current_status"),
-//             'latest_status.statusDate as last_status_date'
-//         )
-//         ->leftJoin('equipment', 'notirepair.equipmentId', '=', 'equipment.equipmentId')
-//         // Join เพื่อเอา ID ล่าสุด
-//         ->leftJoinSub($latestStatusId, 'latest_id_table', function ($join) {
-//             $join->on('notirepair.NotirepairId', '=', 'latest_id_table.NotirepairId');
-//         })
-//         // Join เพื่อเอาชื่อสถานะจริงจาก DB ที่สาม
-//         ->leftJoin(
-//             DB::raw(env('THIRD_DB_DATABASE') . '.statustracking as latest_status'),
-//             function ($join) {
-//                 $join->on('latest_status.NotirepairId', '=', 'notirepair.NotirepairId')
-//                      ->on('latest_status.statustrackingId', '=', 'latest_id_table.latest_id');
-//             }
-//         );
+    //     // 2. Query หลัก
+    //     $query = Notirepair::select(
+    //             'notirepair.*',
+    //             'equipment.equipmentName',
+    //             DB::raw("COALESCE(latest_status.status, 'ยังไม่ได้รับของ') as current_status"),
+    //             'latest_status.statusDate as last_status_date'
+    //         )
+    //         ->leftJoin('equipment', 'notirepair.equipmentId', '=', 'equipment.equipmentId')
+    //         // Join เพื่อเอา ID ล่าสุด
+    //         ->leftJoinSub($latestStatusId, 'latest_id_table', function ($join) {
+    //             $join->on('notirepair.NotirepairId', '=', 'latest_id_table.NotirepairId');
+    //         })
+    //         // Join เพื่อเอาชื่อสถานะจริงจาก DB ที่สาม
+    //         ->leftJoin(
+    //             DB::raw(env('THIRD_DB_DATABASE') . '.statustracking as latest_status'),
+    //             function ($join) {
+    //                 $join->on('latest_status.NotirepairId', '=', 'notirepair.NotirepairId')
+    //                      ->on('latest_status.statustrackingId', '=', 'latest_id_table.latest_id');
+    //             }
+    //         );
 
-//     // 3. ระบบค้นหา (ถ้ามี)
-//     if ($searchTerm) {
-//         $query->where(function ($q) use ($searchTerm) {
-//             $q->where('notirepair.NotirepairId', 'like', "%$searchTerm%")
-//               ->orWhere('notirepair.branchCode', 'like', "%$searchTerm%")
-//               ->orWhere('equipment.equipmentName', 'like', "%$searchTerm%");
-//         });
-//     }
+    //     // 3. ระบบค้นหา (ถ้ามี)
+    //     if ($searchTerm) {
+    //         $query->where(function ($q) use ($searchTerm) {
+    //             $q->where('notirepair.NotirepairId', 'like', "%$searchTerm%")
+    //               ->orWhere('notirepair.branchCode', 'like', "%$searchTerm%")
+    //               ->orWhere('equipment.equipmentName', 'like', "%$searchTerm%");
+    //         });
+    //     }
 
-//     return $query->orderBy('notirepair.DateNotirepair', 'desc')
-//                  ->paginate($perPage)
-//                  ->withQueryString();
-// }
-// เพิ่มใน NotiRepairController.php
+    //     return $query->orderBy('notirepair.DateNotirepair', 'desc')
+    //                  ->paginate($perPage)
+    //                  ->withQueryString();
+    // }
+    // เพิ่มใน NotiRepairController.php
 
-// public function officerTracking(Request $request)
-// {
-//     // รับค่าค้นหาจากหน้าเว็บ
-//     $search = $request->input('search');
-//     $status = $request->input('status');
+    // public function officerTracking(Request $request)
+    // {
+    //     // รับค่าค้นหาจากหน้าเว็บ
+    //     $search = $request->input('search');
+    //     $status = $request->input('status');
 
-//     $jobs = NotirepairRepository::getTrackingListForAdmin($search);
+    //     $jobs = NotirepairRepository::getTrackingListForAdmin($search);
 
-//     $totalCount = Notirepair::count();
-//     $pendingCount = DB::connection('third')->table('statustracking')->where('status','ได้รับของเเล้ว')->count();
-//     return view('dashborad.office', compact('jobs','pendingCount','totalCount'));
-// }
+    //     $totalCount = Notirepair::count();
+    //     $pendingCount = DB::connection('third')->table('statustracking')->where('status','ได้รับของเเล้ว')->count();
+    //     return view('dashborad.office', compact('jobs','pendingCount','totalCount'));
+    // }
 
-// NotirepairController.php
-// NotirepairController.php
-public function officerTracking(Request $request)
-{
-    $search = $request->input('search');
-    $status = $request->input('status');
-    $jobs = NotirepairRepository::getTrackingListForAdmin($search, $status);
+    // NotirepairController.php
+    // NotirepairController.php
+    public function officerTracking(Request $request)
+    {
+        $search = $request->input('search');
+        $status = $request->input('status');
+        $jobs = NotirepairRepository::getTrackingListForAdmin($search, $status);
 
-    // ยอดรวมทั้งหมด
-    // $totalCount = Notirepair::count();
+        // ยอดรวมทั้งหมด
+        // $totalCount = Notirepair::count();
 
-    // // งานที่รอดำเนินการ (เช็คจากฟิลด์ closedJobs)
-    // $pendingCount = Notirepair::where('closedJobs', '=', 'ยังไม่ปิดงาน')->count();
-    $totalCount = DB::connection('third')->table('notirepair')->count();
-    // $totalCount = $jobs->total();
-    // แก้ไข: ระบุเงื่อนไขรอดำเนินการให้ตรงกับฟิลด์ closedJobs
-    $pendingCount = DB::connection('third')->table('notirepair')
-        ->where('closedJobs', '=', 'ยังไม่ปิดงาน')
-        ->count();
+        // // งานที่รอดำเนินการ (เช็คจากฟิลด์ closedJobs)
+        // $pendingCount = Notirepair::where('closedJobs', '=', 'ยังไม่ปิดงาน')->count();
+        $totalCount = DB::connection('third')->table('notirepair')->count();
+        // $totalCount = $jobs->total();
+        // แก้ไข: ระบุเงื่อนไขรอดำเนินการให้ตรงกับฟิลด์ closedJobs
+        $pendingCount = DB::connection('third')->table('notirepair')
+            ->where('closedJobs', '=', 'ยังไม่ปิดงาน')
+            ->count();
 
-    return view('dashborad.office', compact('jobs', 'totalCount', 'pendingCount'));
-}
-// public function officerTracking(Request $request)
-// {
-//     $search = $request->input('search');
-//     $status = $request->input('status');
+        return view('dashborad.office', compact('jobs', 'totalCount', 'pendingCount'));
+    }
+    // public function officerTracking(Request $request)
+    // {
+    //     $search = $request->input('search');
+    //     $status = $request->input('status');
 
-//     $query = DB::table('notirepair') 
-//         ->select('NotirepairId', 'branchCode', 'equipmentName', 'current_status', 'last_status_date', 'DateCloseJobs');
+    //     $query = DB::table('notirepair') 
+    //         ->select('NotirepairId', 'branchCode', 'equipmentName', 'current_status', 'last_status_date', 'DateCloseJobs');
 
-//     // ระบบค้นหา
-//     if ($search) {
-//         $query->where(function($q) use ($search) {
-//             $q->where('NotirepairId', 'LIKE', "%{$search}%")
-//               ->orWhere('branchCode', 'LIKE', "%{$search}%")
-//               ->orWhere('equipmentName', 'LIKE', "%{$search}%");
-//         });
-//     }
+    //     // ระบบค้นหา
+    //     if ($search) {
+    //         $query->where(function($q) use ($search) {
+    //             $q->where('NotirepairId', 'LIKE', "%{$search}%")
+    //               ->orWhere('branchCode', 'LIKE', "%{$search}%")
+    //               ->orWhere('equipmentName', 'LIKE', "%{$search}%");
+    //         });
+    //     }
 
-//     // กรองตามสถานะ (ถ้ามีการเลือก)
-//     if ($status) {
-//         $query->where('current_status', $status);
-//     }
+    //     // กรองตามสถานะ (ถ้ามีการเลือก)
+    //     if ($status) {
+    //         $query->where('current_status', $status);
+    //     }
 
-//     $jobs = $query->orderBy('last_status_date', 'desc')->paginate(10);
+    //     $jobs = $query->orderBy('last_status_date', 'desc')->paginate(10);
 
-//     return view('officer_tracking', compact('jobs'));
-// }
+    //     return view('officer_tracking', compact('jobs'));
+    // }
 
 }

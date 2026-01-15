@@ -44,7 +44,7 @@
                     </thead>
                     <tbody class="text-center">
                         <tr>
-                            <td>{{$updatenoti->NotirepairId}}</td>
+                            <td>{{$updatenoti->JobId ?? $updatenoti->NotirepairId}}</td>
                             <td>{{$updatenoti->equipmentName}}</td>
                             <td>{{$updatenoti->DeatailNotirepair}}</td>
                             <td>{{$updatenoti->DateNotirepair}}</td>
@@ -66,7 +66,8 @@
         <div class="card-body">
             <p class="fw-bold mb-1">
                 <i class="bi bi-box-seam text-primary"></i> รหัสแจ้งซ่อม:
-                <span class="fw-normal">{{$updatenoti->NotirepairId}}</span>
+                {{-- <span class="fw-normal">{{$updatenoti->NotirepairId}}</span> --}}
+                <span class="fw-normal">{{$updatenoti->JobId ?? $updatenoti->NotirepairId}}</span>
             </p>
             <p class="mb-1">
                 <i class="bi bi-tag"></i> อุปกรณ์:
@@ -94,7 +95,7 @@
             <form action="{{route('notiupdate')}}" method="POST">
                 @csrf
                 <input type="hidden" name="NotirepairId" value="{{$updatenoti->NotirepairId}}">
-
+                <input type="hidden" name="JobId" value="{{$updatenoti->JobId }}">
                 <div class="mb-3">
                     <label for="status" class="form-label fw-semibold">
                         อัพเดตสถานะใหม่ (สถานะปัจจุบัน: **{{$displayStatus}}**)

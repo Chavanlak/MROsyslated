@@ -183,6 +183,7 @@ Route::middleware(['RoleMiddleware:Frontstaff'])->group(function () {
     Route::post('/noti/close/{notirepaitid}', [NotiRepairController::class, 'closedJobs'])->name('noti.close');
 
 });
+Route::get('/ofiicer',[NotiRepairController::class,'officerTracking'])->name('officer.tracking')->middleware('RoleMiddleware:AdminOfficer');
 // --- กลุ่มสิทธิ์: ช่างสโตร์ ---
 // Route::middleware(['RoleMiddleware:AdminTechnicianStore'])->group(function () {
 //     Route::get('/noti', [NotiRepairController::class, 'checkNotiRepair'])->name('noti.list');
