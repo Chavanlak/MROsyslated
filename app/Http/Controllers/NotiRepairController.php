@@ -829,8 +829,11 @@ class NotiRepairController extends Controller
             }
 
             $noti = $query->paginate(5)->withQueryString();
-
-            return view('dashborad.storefront', compact('noti'));
+            $branchNames = \App\Models\Mastbranchinfo::all()
+            ->mapWithKeys(function ($item) {
+                return [trim($item->MBranchInfo_Code) => trim($item->Location)];
+            })->toArray();
+            return view('dashborad.storefront', compact('noti','branchNames'));
         }
     }
     public function receiveBack($NotirepairId)
@@ -888,15 +891,13 @@ class NotiRepairController extends Controller
         $countComplete = StatustrackingRepository::CountCompleteStatus();
         return view('dashborad.dashbord', compact('countComplete'));
     }
+
+
     // public static function getClosedJobs(){
     //     $closedJob = StatustrackingRepository::closeedJobStatus();
     //     return view('',compact('closedJob'));
     // }
-
     // }
-
-
-
     // เพิ่มใน NotirepairRepository.php
 
     // public static function getTrackingListForAdmin($searchTerm = null, $perPage = 15)

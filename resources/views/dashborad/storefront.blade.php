@@ -80,7 +80,7 @@
                                                 data-id="{{ $item->NotirepairId }}" 
                                                 data-jobid="{{ $item->JobId ?? $item->NotirepairId }}"
                                                 data-name="{{ $item->equipmentName }}">
-                                            <i class="bi bi-arrow-repeat"></i> รับของคืน
+                                            <i class="bi bi-arrow-repeat"></i> รับของคืน/ปิดงาน
                                         </button>
                                         <form id="form-receive-{{ $item->NotirepairId }}" action="{{ route('noti.close', $item->NotirepairId) }}" method="POST" style="display: none;">
                                             @csrf

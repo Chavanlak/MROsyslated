@@ -337,6 +337,7 @@ class NotirepairRepository
             $query->where(function ($q) use ($searchTerm) {
                 $q->where('notirepair.NotirepairId', 'like', "%$searchTerm%")
                     ->orWhere('notirepair.branchCode', 'like', "%$searchTerm%")
+                    ->orWhere('notirepair.DeatailNotirepair', 'like', "%$searchTerm%")
                     ->orWhere('equipment.equipmentName', 'like', "%$searchTerm%");
             });
         }

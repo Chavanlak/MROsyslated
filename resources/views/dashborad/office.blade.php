@@ -103,12 +103,13 @@
                             <th>JobId</th>
                             <th>สาขา</th>
                             <th class="text-start">อุปกรณ์</th>
+                            <th>รายละเอียด</th>
                             <th>สถานะปัจจุบัน</th>
-                            <th>วันที่รับของ</th>
-                            <th>ผู้รับของ</th>
-                            <th>อัปเดตล่าสุด</th>
+                            <th>วันที่รับของซ่อม</th>
+                            <th>ผู้รับของซ่อม</th>
+                            <th>วันที่อัปเดตล่าสุด</th>
                             <th>วันที่ปิดงาน/โดย</th>
-                            <th class="text-center" style="width: 50px;">Action</th>
+                            {{-- <th class="text-center" style="width: 50px;">Action</th> --}}
                         </tr>
                     </thead>
                     <tbody class="text-center">
@@ -126,7 +127,7 @@
                                 };
                             @endphp
                             <tr>
-                                <td class="fw-bold text-primary">#{{ $job->JobId ?? $job->NotirepairId }}</td>
+                                <td class="fw-bold text-primary">#{{$job->JobId ?? $job->NotirepairId}}</td>
                                 <td>
                                     <span class="badge rounded-pill bg-secondary bg-opacity-10 text-secondary border border-secondary extra-small px-2">
                                         {{ $job->branchCode }}
@@ -137,6 +138,9 @@
                                         {{ $job->equipmentName }}
                                     </div>
                                 </td>
+                                <td>  <div class="text-truncate" style="max-width: 250px;" title="{{ $job->DeatailNotirepair }}">
+                                    {{ $job->DeatailNotirepair }}
+                                </div></td>
                                 <td>
                                     <span class="badge badge-status bg-{{ $statusStyle['bg'] }} text-{{ $statusStyle['text'] }} shadow-sm">
                                         <i class="{{ $statusStyle['icon'] }} me-1"></i> {{ $currentStatus }}
@@ -165,11 +169,11 @@
                                         <span class="badge bg-light text-muted fw-normal border extra-small">ยังไม่ปิดงาน</span>
                                     @endif
                                 </td>
-                                <td class="text-center">
+                                {{-- <td class="text-center">
                                     <button class="btn btn-sm btn-outline-primary border-0" title="ดูรายละเอียด">
                                         <i class="bi bi-eye-fill"></i>
                                     </button>
-                                </td>
+                                </td> --}}
                             </tr>
                         @empty
                         @endforelse

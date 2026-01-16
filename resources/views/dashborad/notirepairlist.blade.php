@@ -34,25 +34,23 @@
                         <th style="width: 15%">จัดการ</th>
                     </tr>
                 </thead>
-                <tbody class="text-center">
+                {{-- <tbody class="text-center">
                     @foreach ($noti as $item)
                         @php
-                        //เปลี่ยนจาก $status = $item->status ?? 'ยังไม่ได้รับของ';
                             $status = $item->status ?? 'ยังไม่ได้รับของ';
                             $isCompleted = str_contains($status, needle: 'ซ่อมงานเสร็จแล้ว');
                             $displayStatus = $isCompleted ? 'ซ่อมเสร็จสิ้น' : $status;
-
                             $color = match ($status) {
                                 'ยังไม่ได้รับของ' => 'danger',
                                 'ได้รับของแล้ว' => 'primary',
                                 'กำลังดำเนินการซ่อม | ช่างStore' => 'warning',
                                 'ส่งSuplierแล้ว' => 'info',
                                 'ซ่อมงานเสร็จแล้ว | ช่างStore', 'ซ่อมงานเสร็จแล้ว | Supplier' => 'success',
+                                'ได้รับของคืนเรียบร้อย' => 'sucess',
                                 default => 'secondary',
                             };
                         @endphp
                         <tr>
-                            {{-- ส่วนที่ปรับปรุง: รหัส JobId แบบอักษรปกติ สีฟ้า --}}
                             <td>
                                 <span class="text-primary fw-bold" style="font-size: 0.85rem;">
                                     #{{$item->JobId ?? $item->NotirepairId}}
@@ -84,32 +82,9 @@
                                 <span class="badge bg-{{ $color }} fw-normal">{{ $displayStatus }}</span>
                             </td>
 
-
-                            {{-- <td>
-                                <div class="d-flex gap-1 justify-content-center">
-                                
-                                    <a href="{{ route('noti.edit', $item->NotirepairId) }}"
-                                       class="btn btn-outline-primary btn-sm" title="แก้ไขข้อมูล">
-                                        <i class="bi bi-pencil"></i>
-                                    </a>
-    
-                                
-                                    @if ($isCompleted)
-                                        <button class="btn btn-outline-secondary btn-sm" disabled title="เสร็จสิ้นแล้ว">
-                                            <i class="bi bi-check-circle"></i>
-                                        </button>
-                                    @else
-                                        <a href="{{ route('noti.show_update_form', $item->NotirepairId) }}"
-                                           class="btn btn-warning btn-sm" title="อัปเดตสถานะ">
-                                            <i class="bi bi-gear-fill"></i>
-                                        </a>
-                                    @endif
-                                </div>
-                            </td> --}}
                             <td>
                                 <div class="d-flex gap-2 justify-content-center">
                                     @if ($status === 'ยังไม่ได้รับของ')
-                                        {{-- ปุ่มกดรับของ --}}
                                         <form action="{{ route('noti.accept', $item->NotirepairId) }}" method="POST">
                                             @csrf
                                             <button type="submit" class="btn btn-success btn-sm px-3 fw-bold" onclick="return confirm('ยืนยันการรับอุปกรณ์?')">
@@ -132,9 +107,13 @@
                                             class="btn btn-primary btn-sm fw-bold">
                                             <i class="bi bi-pencil"></i> แก้ไข
                                         </a>
-                            
+                                    @elseif($status === 'ได้รับของคืนเรียบร้อย')
+                                    <button class="btn btn-sm btn-success border-0" title="งานเสร็จสิ้นแล้ว" disabled>
+                                        <i class="bi bi-check-circle-fill"></i> สำเร็จ
+                                    </button>
+                                   
                                     @else
-                                        {{-- ถ้าได้รับของแล้ว จะแสดงปุ่ม อัปเดต และ แก้ไข --}}
+                                
                                         @if (!$isCompleted)
                                             <a href="{{ route('noti.show_update_form', $item->NotirepairId) }}"
                                                 class="btn btn-warning btn-sm" title="อัปเดตสถานะ">
@@ -144,6 +123,112 @@
                             
                                         <a href="{{ route('noti.edit', $item->NotirepairId) }}"
                                             class="btn btn-primary btn-sm fw-bold">
+                                            <i class="bi bi-pencil"></i> แก้ไข
+                                        </a>
+                                    @endif
+                                </div>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody> --}}
+                <tbody class="text-center">
+                    @foreach ($noti as $item)
+                        @php
+                            $status = $item->status ?? 'ยังไม่ได้รับของ';
+                            
+                            // เช็คสถานะการซ่อมเสร็จ
+                            $isRepaired = str_contains($status, 'ซ่อมงานเสร็จแล้ว');
+                            // เช็คสถานะปิดงาน (หน้าร้านรับของคืนแล้ว)
+                            $isClosed = ($status === 'ได้รับของคืนเรียบร้อย');
+                
+                            // กำหนดชื่อสถานะที่จะแสดงบนหน้าจอ
+                            $displayStatus = $status;
+                            if ($isRepaired) $displayStatus = 'ซ่อมเสร็จสิ้น';
+                            if ($isClosed) $displayStatus = 'ได้รับของคืนเรียบร้อย';
+                
+                            $color = match ($status) {
+                                'ยังไม่ได้รับของ' => 'danger',
+                                'ได้รับของแล้ว' => 'primary',
+                                'กำลังดำเนินการซ่อม | ช่างStore' => 'warning',
+                                'ส่งSuplierแล้ว' => 'info',
+                                'ซ่อมงานเสร็จแล้ว | ช่างStore', 'ซ่อมงานเสร็จแล้ว | Supplier' => 'success',
+                                'ได้รับของคืนเรียบร้อย' => 'success', // แก้ไขจาก sucess เป็น success
+                                default => 'secondary',
+                            };
+                        @endphp
+                        <tr>
+                            <td>
+                                <span class="text-primary fw-bold" style="font-size: 0.85rem;">
+                                    #{{$item->JobId ?? $item->NotirepairId}}
+                                </span>
+                            </td>
+                
+                            <td class="fw-bold">{{$item->equipmentName}}</td>
+                
+                            <td class="text-start small">
+                                <div class="text-truncate" style="max-width: 220px;" title="{{$item->DeatailNotirepair}}">
+                                    {{$item->DeatailNotirepair}}
+                                </div>
+                            </td>
+                
+                            <td>
+                                <div class="fw-bold text-dark">{{$item->branchCode}}</div>
+                                {{-- <div class="small text-muted">เอสพลานาด</div> --}}
+                                <div class="small text-muted">{{ $branchNames[$item->branchCode] ?? 'ไม่พบชื่อสาขา' }}</div>                            </td>
+                
+                            <td class="small">
+                                {{ $item->DateNotirepair ? date('d-m-Y H:i', strtotime($item->DateNotirepair)) : '-' }}
+                            </td>
+                
+                            <td class="small">
+                                {{ $item->statusDate ? date('d-m-Y H:i', strtotime($item->statusDate)) : '-' }}
+                            </td>
+                
+                            <td>
+                                {{-- แสดง Badge สถานะ --}}
+                                <span class="badge bg-{{ $color }} fw-normal">
+                                    @if($isClosed) <i class="bi bi-check-all"></i> @endif
+                                    {{ $displayStatus }}
+                                </span>
+                            </td>
+                
+                            <td>
+                                <div class="d-flex gap-2 justify-content-center">
+                                    @if ($status === 'ยังไม่ได้รับของ')
+                                        {{-- ปุ่มสำหรับ Admin ช่าง กดรับของเข้าคลัง/เข้าระบบ --}}
+                                        <form action="{{ route('noti.accept', $item->NotirepairId) }}" method="POST">
+                                            @csrf
+                                            <button type="submit" class="btn btn-success btn-sm px-3 fw-bold" onclick="return confirm('ยืนยันการรับของ?')">
+                                                <i class="bi bi-box-seam me-1"></i> รับของ
+                                            </button>
+                                        </form>
+                
+                                    @elseif ($isClosed)
+                                        {{-- เมื่องานจบสิ้นแล้ว --}}
+                                        <button class="btn btn-sm btn-light border text-success fw-bold" disabled>
+                                            <i class="bi bi-check-circle-fill"></i> สำเร็จ
+                                        </button>
+                                        {{-- <a href="{{ route('noti.edit', $item->NotirepairId) }}" class="btn btn-outline-primary btn-sm" title="ดูรายละเอียด">
+                                            <i class="bi bi-eye"></i> ดูข้อมูล
+                                        </a> --}}
+                
+                                    @else
+                                        {{-- สถานะระหว่างซ่อม หรือ ซ่อมเสร็จแล้วแต่รอหน้าร้านมารับ --}}
+                                        @if (!$isRepaired)
+                                            {{-- ถ้ายังซ่อมไม่เสร็จ ให้แสดงปุ่มอัปเดตสถานะ --}}
+                                            <a href="{{ route('noti.show_update_form', $item->NotirepairId) }}"
+                                                class="btn btn-warning btn-sm shadow-sm" title="อัปเดตสถานะการซ่อม">
+                                                <i class="bi bi-pencil-square"></i> อัปเดต
+                                            </a>
+                                        @else
+                                            {{-- ถ้าซ่อมเสร็จแล้ว รอหน้าร้านกดรับของ จะแสดงสถานะแจ้งเตือน --}}
+                                            <span class="badge bg-light text-muted border small d-flex align-items-center">
+                                                <i class="bi bi-clock-history me-1"></i> รอหน้าร้านกดรับคืน/ปิดงาน
+                                            </span>
+                                        @endif
+                
+                                        <a href="{{ route('noti.edit', $item->NotirepairId) }}"
+                                            class="btn btn-primary btn-sm fw-bold" title="แก้ไขข้อมูลพื้นฐาน">
                                             <i class="bi bi-pencil"></i> แก้ไข
                                         </a>
                                     @endif
@@ -201,17 +286,22 @@
                                 {{ $isCompleted ? 'เสร็จสิ้น' : $status }}
                             </span>
                         </div>
-
                         {{-- รายละเอียด Location & Zone --}}
-                        <div class="p-2 mb-2 rounded" style="background-color: #f8f9fa;">
+                        {{-- <div class="p-2 mb-2 rounded" style="background-color: #f8f9fa;">
                             <div class="d-flex align-items-center mb-1">
                                 <i class="bi bi-geo-alt-fill text-danger me-2"></i>
                                 <span class="fw-bold small">สาขา: {{ $item->branchCode }} เอสพลานาด</span>
                             </div>
-                            {{-- <div class="d-flex align-items-center">
-                                <i class="bi bi-layers text-muted me-2"></i>
-                                <span class="text-muted small">โซน: {{ $item->zone ?? 'ไม่ได้ระบุ' }}</span>
-                            </div> --}}
+                            
+                        </div> --}}
+                        <div class="p-2 mb-2 rounded" style="background-color: #f8f9fa;">
+                            <div class="d-flex align-items-center mb-1">
+                                <i class="bi bi-geo-alt-fill text-danger me-2"></i>
+                                <span class="fw-bold small">
+                                    สาขา: {{ $item->branchCode }} 
+                                    {{ $branchNames[$item->branchCode] ?? '' }}
+                                </span>
+                            </div>
                         </div>
 
                         {{-- รายละเอียดอาการ --}}
