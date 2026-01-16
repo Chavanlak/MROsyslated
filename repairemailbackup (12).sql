@@ -1,0 +1,663 @@
+-- phpMyAdmin SQL Dump
+-- version 5.2.1
+-- https://www.phpmyadmin.net/
+--
+-- Host: 127.0.0.1
+-- Generation Time: Jan 16, 2026 at 11:57 AM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Database: `repairemailbackup`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `emailrepair`
+--
+
+CREATE TABLE `emailrepair` (
+  `emailRepairId` int(11) NOT NULL,
+  `emailRepair` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+--
+-- Dumping data for table `emailrepair`
+--
+
+INSERT INTO `emailrepair` (`emailRepairId`, `emailRepair`) VALUES
+(1, 'tanadesign.service@gmail.com\r\n'),
+(2, 'pm2storetana@gmail.com'),
+(6, 'chavanlak1806@gmail.com'),
+(7, 'smartmeow11@gmail.com'),
+(9, 'ploy@gmail.com'),
+(10, 'ploy@gmail.com'),
+(11, 'ploy@gmail.com'),
+(12, 'ploy@gmail.com'),
+(13, 'ploy@gmail.com'),
+(14, 'xxxx@gggg.mali.com'),
+(15, 'g@f'),
+(16, 'g@f');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `equipment`
+--
+
+CREATE TABLE `equipment` (
+  `equipmentId` int(11) NOT NULL,
+  `equipmentName` text NOT NULL,
+  `TypeId` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+--
+-- Dumping data for table `equipment`
+--
+
+INSERT INTO `equipment` (`equipmentId`, `equipmentName`, `TypeId`) VALUES
+(1, 'งานแอร์ (งานซ่อม)\r\n', 3),
+(2, 'งานเครื่องดูดอากาศ (ฮูด)  (งานซ่อม)\r\n', 3),
+(18, 'งานซ่อมเบาะ\r\n', 4),
+(19, 'งานพื้น\r\n', 4),
+(20, 'งานผนัง\r\n', 4),
+(21, 'งานฝ้าเพดาน\r\n', 4),
+(22, 'งานเฟอร์นิเจอร์ Built-in \r\n', 4),
+(23, 'งานเฟอร์นิเจอร์ ลอยตัว\r\n', 4),
+(24, 'งานโลโก้ (ภายใน+ภายนอกอาคาร)\r\n', 4),
+(25, 'งานฝารางระบายน้ำ\r\n', 4),
+(26, 'งานประตู\r\n', 4),
+(47, 'ระบบแก๊ส, หัวเตาแก๊ส\r\n', 5),
+(48, 'หัวฉีดแก๊ส, ท่อ-สายส่งแก๊ส\r\n', 5),
+(49, 'หัวเตาแก๊ส\r\n', 5),
+(50, 'ตัวตัดระบบแก๊ส\r\n', 5),
+(51, 'ตู้ควบคุมระบบแก๊ส\r\n', 5),
+(52, 'ตู้คอนโทรลแก๊ส\r\n', 5),
+(53, 'งาน PM\r\n', 5),
+(54, 'ซ่อมไฟ\r\n', 5),
+(55, 'ระบบน้ำ\r\n', 5),
+(56, 'ท่อน้ำ\r\n', 5),
+(57, 'ท่อน้ำทิ้งระบายน้ำ\r\n', 5),
+(58, 'ปลั๊กไฟ\r\n', 5),
+(59, 'ระบบท่อน้ำ\r\n', 5),
+(60, 'สายแลน, สายแลนค์\r\n', 5),
+(61, 'งานติดตั้งอุปกรณ์\r\n', 5),
+(62, 'เครื่องดูดอากาศ(ดูด)-PM\r\n', 5),
+(63, 'เครื่องทำน้ำแข็ง\r\n', 6),
+(64, 'เครื่องล้างจาน, เครื่องอุ่นจาน\r\n', 6),
+(65, 'เครื่องครัว (ตู้เย็น ตู้ไอศครีม ตู้ฟรีส)\r\n', 6),
+(66, 'เครื่องอุ่นจาน\r\n', 6),
+(67, 'ตู้เย็น แช่แข็ง\r\n', 6),
+(68, 'ตู้ชิล\r\n', 6),
+(69, 'ตู้เย็นครัว\r\n', 6),
+(70, 'ตู้ไอศครีม\r\n', 6),
+(71, 'เครื่องล้างจาน\r\n', 6),
+(72, 'ไมโครเวฟ\r\n', 6),
+(73, 'ตู้เย็น2ประตู\r\n', 6),
+(74, 'ตู้เย็นฟรีส\r\n', 6),
+(75, 'เครื่องปั่นน้ำผลไม้\r\n', 6),
+(76, 'เครื่องปั่นน้ำแข็ง\r\n', 6),
+(77, 'เครื่องกรองน้ำ\r\n', 6),
+(78, 'เครื่องปั้นมากิ\r\n', 7),
+(79, 'เครื่องปั้นนิกิริ\r\n', 7),
+(80, 'หม้อนึ่งข้าว 2 ชั้น\r\n', 7),
+(81, 'เตาทอดต่างๆ\r\n', 7),
+(82, 'เครื่องทำมิโซะ\r\n', 7),
+(83, 'เครื่องทำกาแฟ\r\n', 7),
+(84, 'เตาทอดเกี๊ยวซ่า\r\n', 7),
+(85, 'เตาทอดไฟฟ้าเยอร์ 25 ลิตร\r\n', 7),
+(86, 'เตาเทมปุระ\r\n', 7),
+(87, 'หม้อหุ้งข้าว\r\n', 7),
+(88, 'หม้อนึ่งข้าว 3 ชั้น\r\n', 7),
+(89, 'เตาทอด\r\n', 7),
+(90, 'เตาย่าง\r\n', 7),
+(91, 'เครื่องบนสับ\r\n', 7),
+(92, 'เตาทอดไฟเยอร์ 18 ลิตร\r\n', 7),
+(93, 'เตาเทปัง\r\n', 7),
+(94, 'เตาย่าง\r\n', 7),
+(95, 'เตาซอส\r\n', 7),
+(96, 'งานติดตั้งอุปกรณ์\r\n', 7),
+(97, 'งานซ่อมทั่วไป\r\n', 8),
+(98, 'ก๊อกน้ำ\r\n', 8),
+(99, 'เครื่องกรองน้ำ\r\n', 8),
+(100, 'จอ Plasma\r\n', 8),
+(101, 'ติดม่านพลาสติก\r\n', 8),
+(102, 'งานติดตั้งอุปกรณ์\r\n', 8),
+(103, 'กล้อง CCTV\r\n', 9),
+(104, 'ถังดับเพลิง\r\n', 9),
+(105, 'กำจัดแมลง\r\n', 10),
+(110, 'testteqp', 16),
+(111, 'เครื่องทำอาหารเเมว', 18),
+(112, 'วอลเปเปอร์เเมว', 17);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `equipmenttype`
+--
+
+CREATE TABLE `equipmenttype` (
+  `TypeId` int(11) NOT NULL,
+  `emailRepairId` int(11) NOT NULL,
+  `TypeName` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+--
+-- Dumping data for table `equipmenttype`
+--
+
+INSERT INTO `equipmenttype` (`TypeId`, `emailRepairId`, `TypeName`) VALUES
+(3, 1, 'งานระบบ\r\n'),
+(4, 1, 'ตกแต่งภายในและงานสถาปัตย์\r\n'),
+(5, 2, 'งานระบบ (STORE)\r\n'),
+(6, 2, 'งานซ่อมอุปกรณ์งานครัวทั่วไป\r\n'),
+(7, 2, 'งานซ่อมอุปกรณ์ประกอบอาหาร\r\n'),
+(8, 2, 'งานซ่อมทั่วไป\r\n'),
+(9, 2, 'งานระบบความปลอดภัย\r\n'),
+(10, 2, 'งานระบบ Pest Control\r\n'),
+(16, 6, 'test'),
+(17, 7, 'งานผนังmeow7'),
+(18, 7, 'งานซ่อมMeow7'),
+(20, 14, 'typea'),
+(21, 14, 'typeb');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `fileupload`
+--
+
+CREATE TABLE `fileupload` (
+  `FileUploadId` int(11) NOT NULL,
+  `filename` text NOT NULL,
+  `filepath` text NOT NULL,
+  `NotirepairId` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+--
+-- Dumping data for table `fileupload`
+--
+
+INSERT INTO `fileupload` (`FileUploadId`, `filename`, `filepath`, `NotirepairId`) VALUES
+(371, 'bgupload2025-10-07.jpg', 'public//bgupload2025-10-07.jpg', 230),
+(372, 'angryupload2025-10-08.png', 'public//angryupload2025-10-08.png', 231),
+(373, 'bgupload2025-10-08.jpg', 'public//bgupload2025-10-08.jpg', 232),
+(374, 'angryupload2025-10-08.png', 'public//angryupload2025-10-08.png', 233),
+(375, 'coco_1upload2025-10-30.png', 'public//coco_1upload2025-10-30.png', 234),
+(376, 'sadupload2025-11-18.png', 'public//sadupload2025-11-18.png', 235),
+(378, 'sadupload2025-11-25.png', 'public//sadupload2025-11-25.png', 237),
+(379, 'angryupload2025-11-26.png', 'public//angryupload2025-11-26.png', 238),
+(380, 'coco_4upload2025-11-26.png', 'public//coco_4upload2025-11-26.png', 239),
+(381, 'coco_4upload2025-11-26.png', 'public//coco_4upload2025-11-26.png', 240),
+(382, 'coco_4upload2025-11-26.png', 'public//coco_4upload2025-11-26.png', 241),
+(383, 'coco_4upload2025-11-26.png', 'public//coco_4upload2025-11-26.png', 242),
+(384, 'coco_5upload2025-11-26.png', 'public//coco_5upload2025-11-26.png', 243),
+(385, 'angryupload2025-11-26.png', 'public//angryupload2025-11-26.png', 244),
+(386, 'angryupload2025-11-26.png', 'public//angryupload2025-11-26.png', 245),
+(387, 'coco_4upload2025-11-26.png', 'public//coco_4upload2025-11-26.png', 246),
+(388, 'notbadupload2025-11-26.png', 'public//notbadupload2025-11-26.png', 247),
+(389, 'coco_2upload2025-11-26.png', 'public//coco_2upload2025-11-26.png', 257),
+(390, 'coco_3upload2025-11-26.png', 'public//coco_3upload2025-11-26.png', 258),
+(391, 'coco_5upload2025-11-26.png', 'public//coco_5upload2025-11-26.png', 259),
+(392, 'angryupload2025-11-26.png', 'public//angryupload2025-11-26.png', 260),
+(393, 'sadupload2025-11-26.png', 'public//sadupload2025-11-26.png', 261),
+(394, 'coco_4upload2025-11-27.png', 'public//coco_4upload2025-11-27.png', 262),
+(395, 'sadupload2025-11-27.png', 'public//sadupload2025-11-27.png', 263),
+(396, 'angryupload2025-11-27.png', 'public//angryupload2025-11-27.png', 264),
+(397, 'notbadupload2025-11-27.png', 'public//notbadupload2025-11-27.png', 265),
+(398, 'coco_4upload2025-11-27.png', 'public//coco_4upload2025-11-27.png', 266),
+(399, 'notbadupload2025-11-27.png', 'public//notbadupload2025-11-27.png', 267),
+(400, 'coco_4upload2025-11-27.png', 'public//coco_4upload2025-11-27.png', 268),
+(401, 'angryupload2025-11-27.png', 'public//angryupload2025-11-27.png', 269),
+(402, 'SampleVideo_1280x720_1mbupload2025-11-27.mp4', 'public//SampleVideo_1280x720_1mbupload2025-11-27.mp4', 270),
+(403, 'angryupload2025-11-27.png', 'public//angryupload2025-11-27.png', 271),
+(404, 'SampleVideo_1280x720_1mbupload2025-11-27.mp4', 'public//SampleVideo_1280x720_1mbupload2025-11-27.mp4', 272),
+(406, 'angryupload2025-11-27.png', 'public//angryupload2025-11-27.png', 274),
+(407, 'angryupload2025-12-16.png', 'public//angryupload2025-12-16.png', 275),
+(408, 'angryupload2025-12-17.png', 'public//angryupload2025-12-17.png', 276),
+(409, 'angryupload2025-12-17.png', 'public//angryupload2025-12-17.png', 277),
+(410, 'coco_3upload2025-12-17.png', 'public//coco_3upload2025-12-17.png', 278),
+(411, 'angryupload2025-12-17.png', 'public//angryupload2025-12-17.png', 279),
+(412, 'coco_2upload2025-12-17.png', 'public//coco_2upload2025-12-17.png', 279),
+(413, 'coco_3upload2025-12-17.png', 'public//coco_3upload2025-12-17.png', 279),
+(414, 'coco_4upload2025-12-17.png', 'public//coco_4upload2025-12-17.png', 279),
+(415, 'coco_5upload2025-12-17.png', 'public//coco_5upload2025-12-17.png', 279),
+(416, 'angryupload2025-12-17.png', 'public//angryupload2025-12-17.png', 280),
+(417, 'coco_1upload2025-12-17.png', 'public//coco_1upload2025-12-17.png', 280),
+(418, 'coco_2upload2025-12-17.png', 'public//coco_2upload2025-12-17.png', 280),
+(419, 'coco_3upload2025-12-17.png', 'public//coco_3upload2025-12-17.png', 280),
+(420, 'coco_4upload2025-12-17.png', 'public//coco_4upload2025-12-17.png', 280),
+(421, 'notbadupload2025-12-19.png', 'public//notbadupload2025-12-19.png', 281),
+(422, 'angryupload2025-12-22.png', 'public//angryupload2025-12-22.png', 282),
+(423, 'coco_5upload2025-12-22.png', 'public//coco_5upload2025-12-22.png', 283),
+(424, 'coco_4upload2025-12-22.png', 'public//coco_4upload2025-12-22.png', 284),
+(425, 'angryupload2025-12-22.png', 'public//angryupload2025-12-22.png', 285),
+(426, 'coco_5upload2025-12-22.png', 'public//coco_5upload2025-12-22.png', 286),
+(427, 'goodupload2025-12-24.png', 'public//goodupload2025-12-24.png', 287),
+(428, 'angryupload2026-01-13.png', 'public//angryupload2026-01-13.png', 288),
+(429, 'angryupload2026-01-15.png', 'public//angryupload2026-01-15.png', 289),
+(430, 'angryupload2026-01-15.png', 'public//angryupload2026-01-15.png', 290),
+(431, 'angryupload2026-01-15.png', 'public//angryupload2026-01-15.png', 291),
+(432, 'angryupload2026-01-15.png', 'public//angryupload2026-01-15.png', 292),
+(433, 'notbadupload2026-01-15.png', 'public//notbadupload2026-01-15.png', 293),
+(434, 'notbadupload2026-01-15.png', 'public//notbadupload2026-01-15.png', 294),
+(435, 'angryupload2026-01-16.png', 'public//angryupload2026-01-16.png', 295),
+(436, 'notbadupload2026-01-16.png', 'public//notbadupload2026-01-16.png', 296),
+(437, 'notbadupload2026-01-16.png', 'public//notbadupload2026-01-16.png', 297),
+(438, 'coco_4upload2026-01-16.png', 'public//coco_4upload2026-01-16.png', 298),
+(439, 'angryupload2026-01-16.png', 'public//angryupload2026-01-16.png', 299),
+(440, '6lcd1upload2026-01-16.jpg', 'public//6lcd1upload2026-01-16.jpg', 300),
+(441, 'angryupload2026-01-16.png', 'public//angryupload2026-01-16.png', 301);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `notirepair`
+--
+
+CREATE TABLE `notirepair` (
+  `NotirepairId` int(11) NOT NULL,
+  `equipmentId` int(11) NOT NULL,
+  `DateNotirepair` timestamp NOT NULL DEFAULT current_timestamp(),
+  `DeatailNotirepair` text DEFAULT NULL,
+  `zone` text DEFAULT NULL,
+  `branch` text DEFAULT NULL,
+  `closedJobs` text NOT NULL DEFAULT 'ยังไม่ปิดงาน',
+  `DateCloseJobs` datetime DEFAULT NULL,
+  `branchCode` varchar(10) DEFAULT NULL COMMENT 'รหัสสาขาที่ทำการแจ้งซ่อม',
+  `JobId` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+--
+-- Dumping data for table `notirepair`
+--
+
+INSERT INTO `notirepair` (`NotirepairId`, `equipmentId`, `DateNotirepair`, `DeatailNotirepair`, `zone`, `branch`, `closedJobs`, `DateCloseJobs`, `branchCode`, `JobId`) VALUES
+(230, 110, '2025-10-07 10:32:58', 'd', 'chavanlak.p@ku.th', 'repaircentertgi@gmail.com', '', '0000-00-00 00:00:00', NULL, NULL),
+(231, 110, '2025-10-08 05:38:39', 'c', 'chavanlak.p@ku.th', 'repaircentertgi@gmail.com', '', '0000-00-00 00:00:00', NULL, NULL),
+(232, 110, '2025-10-08 05:40:53', 'con', 'chavanlak.p@ku.th', 'repaircentertgi@gmail.com', '', '0000-00-00 00:00:00', NULL, NULL),
+(233, 110, '2025-10-08 05:44:16', 'dddd', 'chavanlak.p@ku.th', 'repaircentertgi@gmail.com', '', '0000-00-00 00:00:00', NULL, NULL),
+(234, 110, '2025-10-30 10:30:25', 'test1', 'chavanlak.p@ku.th', 'repaircentertgi@gmail.com', '', '0000-00-00 00:00:00', NULL, NULL),
+(235, 110, '2025-11-18 08:29:33', 'ff', 'chavanlak.p@ku.th', 'repaircentertgi@gmail.com', '', '0000-00-00 00:00:00', NULL, NULL),
+(237, 110, '2025-11-25 10:58:36', 'นนนน', 'chavanlak.p@ku.th', 'repaircentertgi@gmail.com', '', '0000-00-00 00:00:00', NULL, NULL),
+(238, 110, '2025-11-26 03:54:11', 'เลือก 6 ต้องส่งถึง smartmeow11@gmail.com ด้วย', 'chavanlak.p@ku.th', 'repaircentertgi@gmail.com', '', '0000-00-00 00:00:00', NULL, NULL),
+(239, 112, '2025-11-26 04:03:49', 'ส่งไปหา meow พลอยต้องเห็น', 'chavanlak.p@ku.th', 'repaircentertgi@gmail.com', '', '0000-00-00 00:00:00', NULL, NULL),
+(240, 112, '2025-11-26 04:06:20', 'ส่งหา meow พลอยต้องเห็น', 'chavanlak.p@ku.th', 'repaircentertgi@gmail.com', '', '0000-00-00 00:00:00', NULL, NULL),
+(241, 112, '2025-11-26 04:30:15', 'ส่งถึงพลอยด้วย', 'chavanlak.p@ku.th', 'repaircentertgi@gmail.com', '', '0000-00-00 00:00:00', NULL, NULL),
+(242, 112, '2025-11-26 04:48:30', 'chavanlak can see', 'chavanlak.p@ku.th', 'repaircentertgi@gmail.com', '', '0000-00-00 00:00:00', NULL, NULL),
+(243, 112, '2025-11-26 05:00:16', 'c', 'chavanlak.p@ku.th', 'repaircentertgi@gmail.com', '', '0000-00-00 00:00:00', NULL, NULL),
+(244, 112, '2025-11-26 07:06:43', 'g', 'chavanlak.p@ku.th', 'repaircentertgi@gmail.com', '', '0000-00-00 00:00:00', NULL, NULL),
+(245, 111, '2025-11-26 07:11:25', 'cccc', 'chavanlak.p@ku.th', 'repaircentertgi@gmail.com', '', '0000-00-00 00:00:00', NULL, NULL),
+(246, 111, '2025-11-26 07:37:59', 'kkk', 'chavanlak.p@ku.th', 'repaircentertgi@gmail.com', '', '0000-00-00 00:00:00', NULL, NULL),
+(247, 112, '2025-11-26 08:20:57', 'cccc', 'chavanlak.p@ku.th', 'repaircentertgi@gmail.com', '', '0000-00-00 00:00:00', NULL, NULL),
+(248, 112, '2025-11-26 08:36:19', 'นนนนนนนนนนนนนนนนนนนนนนนนนนนนน', 'chavanlak.p@ku.th', 'repaircentertgi@gmail.com', '', '0000-00-00 00:00:00', NULL, NULL),
+(249, 112, '2025-11-26 08:39:28', 'ccccccccccccccccccccccccccccccccccccccccccc', 'chavanlak.p@ku.th', 'repaircentertgi@gmail.com', '', '0000-00-00 00:00:00', NULL, NULL),
+(250, 112, '2025-11-26 09:14:52', 'cc', 'chavanlak.p@ku.th', 'repaircentertgi@gmail.com', '', '0000-00-00 00:00:00', NULL, NULL),
+(251, 112, '2025-11-26 09:19:25', 'dd', 'chavanlak.p@ku.th', 'repaircentertgi@gmail.com', '', '0000-00-00 00:00:00', NULL, NULL),
+(252, 111, '2025-11-26 09:32:35', 'cccccccccccccccccccccccccccccc', 'chavanlak.p@ku.th', 'repaircentertgi@gmail.com', '', '0000-00-00 00:00:00', NULL, NULL),
+(253, 111, '2025-11-26 09:34:46', 'ssssssssss', 'chavanlak.p@ku.th', 'repaircentertgi@gmail.com', '', '0000-00-00 00:00:00', NULL, NULL),
+(254, 111, '2025-11-26 09:35:23', 'cccccccccccccc', 'chavanlak.p@ku.th', 'repaircentertgi@gmail.com', '', '0000-00-00 00:00:00', NULL, NULL),
+(255, 111, '2025-11-26 09:36:40', 'ccccccccccc', 'chavanlak.p@ku.th', 'repaircentertgi@gmail.com', '', '0000-00-00 00:00:00', NULL, NULL),
+(256, 111, '2025-11-26 09:37:33', 'd', 'chavanlak.p@ku.th', 'repaircentertgi@gmail.com', '', '0000-00-00 00:00:00', NULL, NULL),
+(257, 111, '2025-11-26 09:43:19', 'ffffffffff', 'chavanlak.p@ku.th', 'repaircentertgi@gmail.com', '', '0000-00-00 00:00:00', NULL, NULL),
+(258, 111, '2025-11-26 10:04:37', 'ccccccccccccc', 'chavanlak.p@ku.th', 'repaircentertgi@gmail.com', '', '0000-00-00 00:00:00', NULL, NULL),
+(259, 111, '2025-11-26 10:17:27', 'testtesttest', 'chavanlak.p@ku.th', 'repaircentertgi@gmail.com', '', '0000-00-00 00:00:00', NULL, NULL),
+(260, 111, '2025-11-26 10:32:53', 'ssssssssss', 'chavanlak.p@ku.th', 'repaircentertgi@gmail.com', '', '0000-00-00 00:00:00', NULL, NULL),
+(261, 111, '2025-11-26 10:46:23', 'cccc', 'chavanlak.p@ku.th', 'repaircentertgi@gmail.com', '', '0000-00-00 00:00:00', NULL, NULL),
+(262, 112, '2025-11-27 02:57:15', 'ccccc', 'chavanlak.p@ku.th', 'repaircentertgi@gmail.com', '', '0000-00-00 00:00:00', NULL, NULL),
+(263, 111, '2025-11-27 03:01:09', 'ccc', 'chavanlak.p@ku.th', 'repaircentertgi@gmail.com', '', '0000-00-00 00:00:00', NULL, NULL),
+(264, 111, '2025-11-27 03:05:06', 's', 'chavanlak.p@ku.th', 'repaircentertgi@gmail.com', '', '0000-00-00 00:00:00', NULL, NULL),
+(265, 111, '2025-11-27 03:09:13', 'sss', 'chavanlak.p@ku.th', 'repaircentertgi@gmail.com', '', '0000-00-00 00:00:00', NULL, NULL),
+(266, 112, '2025-11-27 03:37:44', 'ssssssssssss', 'chavanlak.p@ku.th', 'repaircentertgi@gmail.com', '', '0000-00-00 00:00:00', NULL, NULL),
+(267, 112, '2025-11-27 03:42:02', 'ccccc', 'chavanlak.p@ku.th', 'repaircentertgi@gmail.com', '', '0000-00-00 00:00:00', NULL, NULL),
+(268, 112, '2025-11-27 03:58:41', 'check', 'chavanlak.p@ku.th', 'repaircentertgi@gmail.com', '', '0000-00-00 00:00:00', NULL, NULL),
+(269, 112, '2025-11-27 04:00:51', 'หหหห', 'chavanlak.p@ku.th', 'repaircentertgi@gmail.com', '', '0000-00-00 00:00:00', NULL, NULL),
+(270, 112, '2025-11-27 04:01:51', 'นนนนน', 'chavanlak.p@ku.th', 'repaircentertgi@gmail.com', '', '0000-00-00 00:00:00', NULL, NULL),
+(271, 112, '2025-11-27 04:03:18', 'ห', 'chavanlak.p@ku.th', 'repaircentertgi@gmail.com', '', '0000-00-00 00:00:00', NULL, NULL),
+(272, 112, '2025-11-27 04:04:06', 'เเเเ', 'chavanlak.p@ku.th', 'repaircentertgi@gmail.com', '', '0000-00-00 00:00:00', NULL, NULL),
+(274, 112, '2025-11-27 05:14:49', 'cccc', 'chavanlak.p@ku.th', 'repaircentertgi@gmail.com', '', '0000-00-00 00:00:00', NULL, NULL),
+(275, 110, '2025-12-16 10:48:42', 'sssssss', 'chavanlak.p@ku.th', 'repaircentertgi@gmail.com', 'ปิดงานเรียบร้อย', '2025-12-17 15:12:57', 'C01', NULL),
+(276, 110, '2025-12-17 08:40:03', 'จอพังดดดังดงดงดยกพร่ฑบบดเากตพาาดพสดเ่พังไปหมดทุกอสสดเวกวดเพสดววไม่ว้่านเววกพ', 'chavanlak.p@ku.th', 'repaircentertgi@gmail.com', 'ปิดงานเรียบร้อย', '2025-12-17 15:53:06', 'C01', NULL),
+(277, 110, '2025-12-17 08:41:10', '1.สวัสดีปีใหม่\r\n2.สวัสดีชาวโลก\r\n3.เบื่อหวะ', 'chavanlak.p@ku.th', 'repaircentertgi@gmail.com', 'ปิดงานเรียบร้อย', '2025-12-24 15:06:15', 'C01', NULL),
+(278, 110, '2025-12-17 08:41:57', '1.ก2ด2ก2ด2เก2ด2เ2กด2เ2กด2เก2ด2เก2ดเ\r\n2.กดเกดเกดเพดเสยสสสดนเพสกนดสสพพสสดนเพสสสดเสกนสพสดนเนสพสดกสเพดเพ\r\n3.ดกเาพยวดวเววดกพพพพพพพพพพพพพพพพพพพพพพพพพพพพพพพพพพพพพพพพพพพพพพพ', 'chavanlak.p@ku.th', 'repaircentertgi@gmail.com', 'ปิดงานเรียบร้อย', '2025-12-25 17:57:34', 'C01', NULL),
+(279, 110, '2025-12-17 09:53:48', 'อยากจะเเจ้งซ่อมคอมจอฟ้าใช้การไม่ได้มาหลายวัน เครื่องปริ้นพัง กาน้ำเสีย ไมค์พัง เตาเเก๊สพัง ทำอะไรไม่ได้', 'chavanlak.p@ku.th', 'repaircentertgi@gmail.com', 'ยังไม่ปิดงาน', NULL, 'F01', NULL),
+(280, 110, '2025-12-17 10:20:37', '- ไม่มีเมลสาขาด้วย \r\n- BM ไม่อัพเดทด้วยเเหละว้าววววววววววววววววววววววววววววววววววววววววววววววววว\r\n- ต้องเเก้ใหม่อีกเชื่อดิ', 'chavanlak.p@ku.th', 'example@mail.com', 'ปิดงานเรียบร้อย', '2026-01-15 14:04:27', 'FQ01', NULL),
+(281, 110, '2025-12-19 10:27:10', 'เทสงานระบบบเเจเ้งซ่อมจอฟ้าดับ คอมพัง เครื่องปริิ้่นพัง น้ำไม่ไหล ไฟดับ หนูกัดสายไฟ เตาไฟฟ้าไม่ทำงาน', 'chavanlak.p@ku.th', 'example@mail.com', 'ปิดงานเรียบร้อย', '2026-01-15 17:24:51', 'FQ01', NULL),
+(282, 110, '2025-12-22 07:47:23', 'จอฟ้า', 'chavanlak.p@ku.th', 'example@mail.com', 'ปิดงานเรียบร้อย', '2026-01-15 17:25:10', 'FQ01', NULL),
+(283, 110, '2025-12-22 07:48:09', 'คอมพัง', 'chavanlak.p@ku.th', 'example@mail.com', 'ปิดงานเรียบร้อย', '2026-01-15 13:57:05', 'FQ01', NULL),
+(284, 110, '2025-12-22 07:49:48', '- เทส1\r\n- เทส2 \r\n- เทส 3', 'chavanlak.p@ku.th', 'example@mail.com', 'ปิดงานเรียบร้อย', '2025-12-22 14:51:52', 'FQ01', NULL),
+(285, 112, '2025-12-22 07:50:47', 'วอลเปเปอร์พัง', 'chavanlak.p@ku.th', 'repaircentertgi@gmail.com', 'ปิดงานเรียบร้อย', '2026-01-15 14:02:31', 'C01', NULL),
+(286, 110, '2025-12-22 09:13:18', 'test', 'chavanlak.p@ku.th', 'repaircentertgi@gmail.com', 'ปิดงานเรียบร้อย', '2025-12-22 16:26:40', 'C01', 'MRO-C01-20251222-005'),
+(287, 110, '2025-12-24 10:56:35', 'ssss', 'chavanlak.p@ku.th', 'example@mail.com', 'ปิดงานเรียบร้อย', '2026-01-14 22:15:45', 'F05', 'MRO-F05-20251224-001'),
+(288, 112, '2026-01-13 09:36:01', 'ดด', 'chavanlak.p@ku.th', 'example@mail.com', 'ปิดงานเรียบร้อย', '2026-01-14 22:15:06', 'F05', 'MRO-F05-20260113-001'),
+(289, 111, '2026-01-15 07:12:37', '15/1 14.12', 'chavanlak.p@ku.th', 'example@mail.com', 'ปิดงานเรียบร้อย', '2026-01-15 15:11:33', 'F05', 'MRO-F05-20260115-001'),
+(290, 112, '2026-01-15 07:57:12', '15/1 14.57', 'chavanlak.p@ku.th', 'example@mail.com', 'ปิดงานเรียบร้อย', '2026-01-15 16:21:15', 'F05', 'MRO-F05-20260115-002'),
+(291, 110, '2026-01-15 09:52:06', '16.51 15/1', 'chavanlak.p@ku.th', 'example@mail.com', 'ปิดงานเรียบร้อย', '2026-01-15 17:05:03', 'F05', 'MRO-F05-20260115-003'),
+(292, 110, '2026-01-15 09:52:32', '16.52', 'chavanlak.p@ku.th', 'example@mail.com', 'ปิดงานเรียบร้อย', '2026-01-15 16:55:19', 'F05', 'MRO-F05-20260115-004'),
+(293, 110, '2026-01-15 10:28:28', '17.28', 'chavanlak.p@ku.th', 'example@mail.com', 'ปิดงานเรียบร้อย', '2026-01-15 17:30:28', 'FQ01', 'MRO-FQ01-20260115-005'),
+(294, 110, '2026-01-15 10:28:46', '17.28.1', 'chavanlak.p@ku.th', 'example@mail.com', 'ยังไม่ปิดงาน', NULL, 'FQ01', 'MRO-FQ01-20260115-006'),
+(295, 112, '2026-01-16 03:16:30', '10.16 16/1', 'chavanlak.p@ku.th', 'repaircentertgi@gmail.com', 'ปิดงานเรียบร้อย', '2026-01-16 16:40:11', 'C01', 'MRO-C01-20260116-001'),
+(296, 112, '2026-01-16 03:17:21', '16/1 10.18', 'chavanlak.p@ku.th', 'repaircentertgi@gmail.com', 'ปิดงานเรียบร้อย', '2026-01-16 10:27:16', 'C01', 'MRO-C01-20260116-002'),
+(297, 112, '2026-01-16 04:01:03', '11.00 16/1', 'chavanlak.p@ku.th', 'repaircentertgi@gmail.com', 'ปิดงานเรียบร้อย', '2026-01-16 15:58:55', 'C01', 'MRO-C01-20260116-003'),
+(298, 112, '2026-01-16 04:01:37', '11.01 16/1', 'chavanlak.p@ku.th', 'repaircentertgi@gmail.com', 'ยังไม่ปิดงาน', NULL, 'C01', 'MRO-C01-20260116-004'),
+(299, 110, '2026-01-16 06:52:50', '16/1 13.52', 'chavanlak.p@ku.th', 'repaircentertgi@gmail.com', 'ยังไม่ปิดงาน', NULL, 'C01', 'MRO-C01-20260116-005'),
+(300, 110, '2026-01-16 09:01:49', 'ทดสอบ อยากเห็น', 'chavanlak.p@ku.th', 'repaircentertgi@gmail.com', 'ปิดงานเรียบร้อย', '2026-01-16 16:27:32', 'C01', 'MRO-C01-20260116-006'),
+(301, 110, '2026-01-16 10:18:49', 'ทดสอบระบบเเจ้งซ่อม ท่อน้ำเสียมีรูมีรอยรั่วออกมาเยอะต้องรีบเเก้ไขโดยด่วน ทัน ที\r\n- ของพัง\r\n- ท่อปะปาเสีย', 'chavanlak.p@ku.th', 'example@mail.com', 'ยังไม่ปิดงาน', NULL, 'F05', 'MRO-F05-20260116-007');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `statustracking`
+--
+
+CREATE TABLE `statustracking` (
+  `statustrackingId` int(11) NOT NULL,
+  `NotirepairId` int(11) NOT NULL,
+  `status` enum('ยังไม่ได้รับของ','ได้รับของแล้ว','ส่งSuplierแล้ว','กำลังดำเนินการซ่อม | ช่างStore','ซ่อมงานเสร็จแล้ว | ช่างStore','ซ่อมงานเสร็จแล้ว | Supplier','ได้รับของคืนเรียบร้อย') NOT NULL DEFAULT 'ยังไม่ได้รับของ',
+  `statusDate` datetime DEFAULT current_timestamp(),
+  `staffcode` varchar(20) DEFAULT NULL,
+  `staffname` varchar(50) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+--
+-- Dumping data for table `statustracking`
+--
+
+INSERT INTO `statustracking` (`statustrackingId`, `NotirepairId`, `status`, `statusDate`, `staffcode`, `staffname`) VALUES
+(23, 284, 'ได้รับของแล้ว', '2025-12-22 14:51:36', NULL, NULL),
+(24, 286, 'ได้รับของแล้ว', '2025-12-22 16:22:53', NULL, NULL),
+(25, 285, 'ได้รับของแล้ว', '2025-12-22 16:23:31', NULL, NULL),
+(26, 286, 'กำลังดำเนินการซ่อม | ช่างStore', '2025-12-22 16:35:10', NULL, NULL),
+(27, 286, 'ซ่อมงานเสร็จแล้ว | ช่างStore', '2025-12-22 16:53:52', NULL, NULL),
+(28, 285, 'กำลังดำเนินการซ่อม | ช่างStore', '2025-12-22 17:04:15', NULL, NULL),
+(29, 285, 'ส่งSuplierแล้ว', '2025-12-23 15:52:43', NULL, NULL),
+(30, 285, 'ซ่อมงานเสร็จแล้ว | Supplier', '2025-12-23 17:37:08', NULL, NULL),
+(31, 278, 'ได้รับของแล้ว', '2025-12-24 14:46:53', NULL, NULL),
+(32, 277, 'ได้รับของแล้ว', '2025-12-24 14:49:44', NULL, NULL),
+(33, 283, 'ได้รับของแล้ว', '2025-12-26 16:41:38', NULL, NULL),
+(34, 281, 'ได้รับของแล้ว', '2025-12-26 17:22:54', '0042786', NULL),
+(35, 282, 'ได้รับของแล้ว', '2025-12-26 17:28:26', '0042786', 'ธิวาพร'),
+(36, 287, 'ได้รับของแล้ว', '2026-01-09 17:27:05', '0021954', 'เตชินท์'),
+(37, 288, 'ได้รับของแล้ว', '2026-01-13 17:46:24', '1234', 'กุ็กไก่ กุ๊กๆ'),
+(38, 279, 'ได้รับของแล้ว', '2026-01-13 17:53:41', '1234', 'กุ็กไก่ กุ๊กๆ'),
+(39, 280, 'ได้รับของแล้ว', '2026-01-14 20:52:34', '1234', 'กุ็กไก่ กุ๊กๆ'),
+(40, 268, 'ได้รับของแล้ว', '2026-01-14 20:53:40', '1234', 'กุ็กไก่ กุ๊กๆ'),
+(41, 269, 'ได้รับของแล้ว', '2026-01-14 20:57:15', '1234', 'กุ็กไก่ กุ๊กๆ'),
+(42, 268, 'กำลังดำเนินการซ่อม | ช่างStore', '2026-01-14 21:07:46', NULL, NULL),
+(43, 268, 'ซ่อมงานเสร็จแล้ว | ช่างStore', '2026-01-14 21:08:19', NULL, NULL),
+(44, 230, 'ได้รับของแล้ว', '2026-01-14 21:11:27', '1234', 'กุ็กไก่ กุ๊กๆ'),
+(45, 230, 'ส่งSuplierแล้ว', '2026-01-14 21:11:40', NULL, NULL),
+(46, 230, 'ซ่อมงานเสร็จแล้ว | Supplier', '2026-01-14 21:12:27', NULL, NULL),
+(47, 279, 'กำลังดำเนินการซ่อม | ช่างStore', '2026-01-14 21:26:35', NULL, NULL),
+(48, 279, 'ซ่อมงานเสร็จแล้ว | ช่างStore', '2026-01-14 21:26:49', NULL, NULL),
+(49, 280, 'กำลังดำเนินการซ่อม | ช่างStore', '2026-01-14 21:27:05', NULL, NULL),
+(50, 288, 'กำลังดำเนินการซ่อม | ช่างStore', '2026-01-14 21:49:11', NULL, NULL),
+(51, 288, 'ซ่อมงานเสร็จแล้ว | ช่างStore', '2026-01-14 21:51:24', NULL, NULL),
+(52, 283, 'กำลังดำเนินการซ่อม | ช่างStore', '2026-01-15 10:03:50', NULL, NULL),
+(53, 284, 'ส่งSuplierแล้ว', '2026-01-15 10:15:58', NULL, NULL),
+(54, 281, 'กำลังดำเนินการซ่อม | ช่างStore', '2026-01-15 10:16:26', NULL, NULL),
+(55, 282, 'กำลังดำเนินการซ่อม | ช่างStore', '2026-01-15 10:19:27', NULL, NULL),
+(56, 287, 'กำลังดำเนินการซ่อม | ช่างStore', '2026-01-15 10:20:00', NULL, NULL),
+(57, 287, 'ซ่อมงานเสร็จแล้ว | ช่างStore', '2026-01-15 10:26:23', NULL, NULL),
+(58, 287, 'กำลังดำเนินการซ่อม | ช่างStore', '2026-01-15 10:27:01', NULL, NULL),
+(59, 287, 'ซ่อมงานเสร็จแล้ว | ช่างStore', '2026-01-15 10:27:52', NULL, NULL),
+(60, 288, 'ได้รับของแล้ว', '2026-01-15 10:34:31', NULL, NULL),
+(61, 288, 'กำลังดำเนินการซ่อม | ช่างStore', '2026-01-15 10:35:22', NULL, NULL),
+(62, 283, 'ซ่อมงานเสร็จแล้ว | ช่างStore', '2026-01-15 13:51:59', NULL, NULL),
+(63, 288, 'ซ่อมงานเสร็จแล้ว | ช่างStore', '2026-01-15 13:52:32', NULL, NULL),
+(64, 280, 'ซ่อมงานเสร็จแล้ว | ช่างStore', '2026-01-15 13:52:47', NULL, NULL),
+(65, 282, 'ซ่อมงานเสร็จแล้ว | ช่างStore', '2026-01-15 13:53:57', NULL, NULL),
+(66, 289, 'ได้รับของแล้ว', '2026-01-15 14:24:27', '1234', 'กุ็กไก่ กุ๊กๆ'),
+(67, 289, 'กำลังดำเนินการซ่อม | ช่างStore', '2026-01-15 15:00:33', NULL, NULL),
+(68, 289, 'ซ่อมงานเสร็จแล้ว | ช่างStore', '2026-01-15 15:07:39', NULL, NULL),
+(69, 290, 'ได้รับของแล้ว', '2026-01-15 16:18:22', '1234', 'กุ็กไก่ กุ๊กๆ'),
+(70, 290, 'กำลังดำเนินการซ่อม | ช่างStore', '2026-01-15 16:19:46', NULL, NULL),
+(71, 281, 'ซ่อมงานเสร็จแล้ว | ช่างStore', '2026-01-15 16:19:53', NULL, NULL),
+(72, 290, 'ซ่อมงานเสร็จแล้ว | ช่างStore', '2026-01-15 16:20:48', NULL, NULL),
+(73, 292, 'ได้รับของแล้ว', '2026-01-15 16:53:13', '1234', 'กุ็กไก่ กุ๊กๆ'),
+(74, 292, 'กำลังดำเนินการซ่อม | ช่างStore', '2026-01-15 16:54:08', '1234', 'กุ็กไก่ กุ๊กๆ'),
+(75, 291, 'ได้รับของแล้ว', '2026-01-15 16:54:19', '1234', 'กุ็กไก่ กุ๊กๆ'),
+(76, 292, 'ซ่อมงานเสร็จแล้ว | ช่างStore', '2026-01-15 16:54:28', '1234', 'กุ็กไก่ กุ๊กๆ'),
+(77, 291, 'กำลังดำเนินการซ่อม | ช่างStore', '2026-01-15 16:54:37', '1234', 'กุ็กไก่ กุ๊กๆ'),
+(78, 291, 'ซ่อมงานเสร็จแล้ว | ช่างStore', '2026-01-15 17:04:49', '1234', 'กุ็กไก่ กุ๊กๆ'),
+(79, 291, 'ได้รับของคืนเรียบร้อย', '2026-01-15 17:05:03', '0021954', 'เตชินท์'),
+(80, 281, 'ได้รับของคืนเรียบร้อย', '2026-01-15 17:24:51', '0042786', 'ธิวาพร'),
+(81, 282, 'ได้รับของคืนเรียบร้อย', '2026-01-15 17:25:10', '0042786', 'ธิวาพร'),
+(82, 293, 'ได้รับของแล้ว', '2026-01-15 17:29:23', '1234', 'กุ็กไก่ กุ๊กๆ'),
+(83, 293, 'ส่งSuplierแล้ว', '2026-01-15 17:29:36', '1234', 'กุ็กไก่ กุ๊กๆ'),
+(84, 293, 'ซ่อมงานเสร็จแล้ว | Supplier', '2026-01-15 17:29:46', '1234', 'กุ็กไก่ กุ๊กๆ'),
+(85, 293, 'ได้รับของคืนเรียบร้อย', '2026-01-15 17:30:28', '0042786', 'ธิวาพร'),
+(86, 296, 'ได้รับของแล้ว', '2026-01-16 10:19:31', '1234', 'กุ็กไก่ กุ๊กๆ'),
+(87, 296, 'ส่งSuplierแล้ว', '2026-01-16 10:22:02', '1234', 'กุ็กไก่ กุ๊กๆ'),
+(88, 296, 'ซ่อมงานเสร็จแล้ว | Supplier', '2026-01-16 10:24:23', '1234', 'กุ็กไก่ กุ๊กๆ'),
+(89, 296, 'ได้รับของคืนเรียบร้อย', '2026-01-16 10:27:16', '0056713', 'วิมล '),
+(90, 297, 'ได้รับของแล้ว', '2026-01-16 11:03:08', '1234', 'กุ็กไก่ กุ๊กๆ'),
+(91, 297, 'กำลังดำเนินการซ่อม | ช่างStore', '2026-01-16 11:07:35', '1234', 'กุ็กไก่ กุ๊กๆ'),
+(92, 297, 'ซ่อมงานเสร็จแล้ว | ช่างStore', '2026-01-16 11:07:46', '1234', 'กุ็กไก่ กุ๊กๆ'),
+(93, 298, 'ได้รับของแล้ว', '2026-01-16 13:50:17', '1234', 'กุ็กไก่ กุ๊กๆ'),
+(94, 295, 'ได้รับของแล้ว', '2026-01-16 13:53:20', '1234', 'กุ็กไก่ กุ๊กๆ'),
+(95, 295, 'กำลังดำเนินการซ่อม | ช่างStore', '2026-01-16 13:53:29', '1234', 'กุ็กไก่ กุ๊กๆ'),
+(96, 297, 'ได้รับของคืนเรียบร้อย', '2026-01-16 15:58:55', '0056713', 'วิมล '),
+(97, 300, 'ได้รับของแล้ว', '2026-01-16 16:03:40', '1234', 'กุ็กไก่ กุ๊กๆ'),
+(98, 295, 'ซ่อมงานเสร็จแล้ว | Supplier', '2026-01-16 16:06:40', '1234', 'กุ็กไก่ กุ๊กๆ'),
+(99, 295, 'ซ่อมงานเสร็จแล้ว | ช่างStore', '2026-01-16 16:07:05', '1234', 'กุ็กไก่ กุ๊กๆ'),
+(100, 300, 'ส่งSuplierแล้ว', '2026-01-16 16:08:43', '1234', 'กุ็กไก่ กุ๊กๆ'),
+(101, 300, 'กำลังดำเนินการซ่อม | ช่างStore', '2026-01-16 16:09:23', '1234', 'กุ็กไก่ กุ๊กๆ'),
+(102, 300, 'ซ่อมงานเสร็จแล้ว | ช่างStore', '2026-01-16 16:09:47', '1234', 'กุ็กไก่ กุ๊กๆ'),
+(103, 300, 'ซ่อมงานเสร็จแล้ว | Supplier', '2026-01-16 16:10:10', '1234', 'กุ็กไก่ กุ๊กๆ'),
+(104, 300, 'ส่งSuplierแล้ว', '2026-01-16 16:10:31', '1234', 'กุ็กไก่ กุ๊กๆ'),
+(105, 298, 'กำลังดำเนินการซ่อม | ช่างStore', '2026-01-16 16:13:55', '1234', 'กุ็กไก่ กุ๊กๆ'),
+(106, 300, 'ยังไม่ได้รับของ', '2026-01-16 16:14:42', '1234', 'กุ็กไก่ กุ๊กๆ'),
+(107, 300, 'ได้รับของแล้ว', '2026-01-16 16:14:53', '1234', 'กุ็กไก่ กุ๊กๆ'),
+(108, 300, 'กำลังดำเนินการซ่อม | ช่างStore', '2026-01-16 16:15:34', '1234', 'กุ็กไก่ กุ๊กๆ'),
+(109, 300, 'ซ่อมงานเสร็จแล้ว | ช่างStore', '2026-01-16 16:18:57', '1234', 'กุ็กไก่ กุ๊กๆ'),
+(110, 300, 'ได้รับของคืนเรียบร้อย', '2026-01-16 16:27:32', '0056713', 'วิมล '),
+(111, 295, 'ได้รับของคืนเรียบร้อย', '2026-01-16 16:40:11', '0056713', 'วิมล '),
+(112, 301, 'ได้รับของแล้ว', '2026-01-16 17:22:53', '1234', 'กุ็กไก่ กุ๊กๆ'),
+(113, 301, 'กำลังดำเนินการซ่อม | ช่างStore', '2026-01-16 17:28:09', '1234', 'กุ็กไก่ กุ๊กๆ'),
+(114, 298, 'ส่งSuplierแล้ว', '2026-01-16 17:32:48', '1234', 'กุ็กไก่ กุ๊กๆ');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `zone`
+--
+
+CREATE TABLE `zone` (
+  `zoneId` int(11) NOT NULL,
+  `StaffName` varchar(50) NOT NULL,
+  `email` text NOT NULL,
+  `Zone` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+--
+-- Dumping data for table `zone`
+--
+
+INSERT INTO `zone` (`zoneId`, `StaffName`, `email`, `Zone`) VALUES
+(3, 'APICHAD', 'apichad.s@tgi.co.th', ''),
+(4, 'ARNAT', 'arnutladlosri@gmail.com', ''),
+(5, 'BUAPIT', 'buapit.k@tgi.co.th\r\n', NULL),
+(6, 'CHANON', 'Jonteepakdeec@gmail.com\r\n', NULL),
+(7, 'JADSADA', 'jedsada.j@tgi.co.th\r\n', NULL),
+(8, 'JANJIRA', 'janjira.n@tgi.co.th\r\n', NULL),
+(9, 'JIRAPONG', 'jirapong.p@tgi.co.th\r\n', NULL),
+(10, 'JIRAPORN', 'jiraporn.n@tgi.co.th\r\n', NULL),
+(11, 'KANJANA', 'kanjana.p@tgi.co.th\r\n', NULL),
+(12, 'KISSADAKORN', 'kidsadakorn.r@tgi.co.th', NULL),
+(13, 'MANEERATTANAPORN', 'Maneerattanaporn.buncha@gmail.com', NULL),
+(14, 'NATTHIDA', 'natthathida.p@tgi.co.th', '\r\n'),
+(15, 'NONTHAWAT', 'nonthawat.n@tgi.co.th', NULL),
+(16, 'NUPOND', 'nupond.k@tanagroup.net', NULL),
+(17, 'PANARAT', 'panarat.k@tgi.co.th', NULL),
+(18, 'PASSAKORN', 'passakorn.t@tgi.co.th', NULL),
+(19, 'PATCHAREE', 'patcharee.c@tgi.co.th', NULL),
+(20, 'PHITCHAPHAT', 'namphung.b@tgi.co.th', NULL),
+(21, 'PIYAWAN', 'Khattiyaaaa@gmail.com', NULL),
+(22, 'PONGSAK', 'pongsak.p@tgi.co.th', NULL),
+(23, 'PORNNIPA', 'pornnipa.porn800@gmail.com', NULL),
+(24, 'PRANEE	', 'pranee.d@tgi.co.th', NULL),
+(25, 'SAKUNTALA', 'sakuntara.c@tgi.co.th', NULL),
+(26, 'SAOWALACK', 'saowalack.t@tgi.co.th', NULL),
+(27, 'SAOWANIT', 'saowanit.p@tgi.co.th', NULL),
+(28, 'SAWITREE', 'sawitree.k@tgi.co.th', NULL),
+(29, 'SINEENART', 'sineenart.t@tanagroup.net', NULL),
+(30, 'SOPIDA', 'sopida17021989@gmail.com', NULL),
+(31, 'SUNEENET', 'suneenet.b@tanagroup.net', NULL),
+(32, 'SUPAWIT', 'supawit.t@tgi.co.th', NULL),
+(33, 'SUTHATHIP', 'suthathip.n@tgi.co.th', NULL),
+(34, 'SUWIMOL', 'Baibua23405@gmail.com', NULL),
+(35, 'TANAKORN', 'tanakorn.k@tgi.co.th', NULL),
+(36, 'TECHIN', 'Techinfuji@gmail.com', NULL),
+(37, 'VARICH', 'varich.1061@gmail.com', NULL),
+(38, 'WANPEN', 'wanpen.t@tanagroup.net', NULL),
+(39, 'WILAIWAN', 'wilaiwan.s@tgi.co.th', NULL),
+(40, 'WIMOL', 'wimol.s@tgi.co.th', NULL),
+(41, 'Test', 'chavanlak.p@ku.th', NULL);
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `emailrepair`
+--
+ALTER TABLE `emailrepair`
+  ADD PRIMARY KEY (`emailRepairId`);
+
+--
+-- Indexes for table `equipment`
+--
+ALTER TABLE `equipment`
+  ADD PRIMARY KEY (`equipmentId`),
+  ADD KEY `TypeId` (`TypeId`);
+
+--
+-- Indexes for table `equipmenttype`
+--
+ALTER TABLE `equipmenttype`
+  ADD PRIMARY KEY (`TypeId`),
+  ADD KEY `emailRepairId` (`emailRepairId`);
+
+--
+-- Indexes for table `fileupload`
+--
+ALTER TABLE `fileupload`
+  ADD PRIMARY KEY (`FileUploadId`),
+  ADD KEY `NotirepairId` (`NotirepairId`);
+
+--
+-- Indexes for table `notirepair`
+--
+ALTER TABLE `notirepair`
+  ADD PRIMARY KEY (`NotirepairId`),
+  ADD KEY `equipmentId` (`equipmentId`);
+
+--
+-- Indexes for table `statustracking`
+--
+ALTER TABLE `statustracking`
+  ADD PRIMARY KEY (`statustrackingId`),
+  ADD KEY `NotirepairId` (`NotirepairId`);
+
+--
+-- Indexes for table `zone`
+--
+ALTER TABLE `zone`
+  ADD PRIMARY KEY (`zoneId`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `emailrepair`
+--
+ALTER TABLE `emailrepair`
+  MODIFY `emailRepairId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+
+--
+-- AUTO_INCREMENT for table `equipment`
+--
+ALTER TABLE `equipment`
+  MODIFY `equipmentId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=115;
+
+--
+-- AUTO_INCREMENT for table `equipmenttype`
+--
+ALTER TABLE `equipmenttype`
+  MODIFY `TypeId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+
+--
+-- AUTO_INCREMENT for table `fileupload`
+--
+ALTER TABLE `fileupload`
+  MODIFY `FileUploadId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=442;
+
+--
+-- AUTO_INCREMENT for table `notirepair`
+--
+ALTER TABLE `notirepair`
+  MODIFY `NotirepairId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=302;
+
+--
+-- AUTO_INCREMENT for table `statustracking`
+--
+ALTER TABLE `statustracking`
+  MODIFY `statustrackingId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=115;
+
+--
+-- AUTO_INCREMENT for table `zone`
+--
+ALTER TABLE `zone`
+  MODIFY `zoneId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `equipment`
+--
+ALTER TABLE `equipment`
+  ADD CONSTRAINT `equipment_ibfk_1` FOREIGN KEY (`TypeId`) REFERENCES `equipmenttype` (`TypeId`);
+
+--
+-- Constraints for table `equipmenttype`
+--
+ALTER TABLE `equipmenttype`
+  ADD CONSTRAINT `equipmenttype_ibfk_1` FOREIGN KEY (`emailRepairId`) REFERENCES `emailrepair` (`emailRepairId`);
+
+--
+-- Constraints for table `fileupload`
+--
+ALTER TABLE `fileupload`
+  ADD CONSTRAINT `fileupload_ibfk_1` FOREIGN KEY (`NotirepairId`) REFERENCES `notirepair` (`NotirepairId`);
+
+--
+-- Constraints for table `notirepair`
+--
+ALTER TABLE `notirepair`
+  ADD CONSTRAINT `notirepair_ibfk_1` FOREIGN KEY (`equipmentId`) REFERENCES `equipment` (`equipmentId`);
+
+--
+-- Constraints for table `statustracking`
+--
+ALTER TABLE `statustracking`
+  ADD CONSTRAINT `statustracking_ibfk_1` FOREIGN KEY (`NotirepairId`) REFERENCES `notirepair` (`NotirepairId`);
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
