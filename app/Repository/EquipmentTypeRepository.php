@@ -23,6 +23,8 @@ class EquipmentTypeRepository{
     //     ->orderBy('emailrepair.emailRepairId')
     //     ->get();
     // }
+    
+    //ดึงไอดีอีเมลที่เชื่อมโยงกับปีะเภทของอุปกรณ์
     public static function getEmailRepair($typeId)
     {
         return Equipmenttype::select(

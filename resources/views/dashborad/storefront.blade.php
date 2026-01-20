@@ -44,7 +44,9 @@
                     @foreach ($noti as $item)
                         @php
                             $status = $item->status ?? 'ยังไม่ได้รับของ';
+                            $isRefused = str_contains($status, 'ปฏิเสธการซ่อม');
                             $isClosed = ($item->closedJobs === 'ปิดงานเรียบร้อย');
+                            // $isClosed = ($item->closedJobs === 'ปิดงานเรียบร้อย') || $isRefused;
                             $isRepairFinished = str_contains($status, 'ซ่อมงานเสร็จแล้ว');
                             
                             // กำหนดสี Badge
@@ -61,11 +63,28 @@
                                 </span>
                             </td>
                             <td class="fw-bold">{{ $item->equipmentName }}</td>
-                            <td class="text-start small">
+                            {{-- <td class="text-start small">
                                 <div class="text-truncate" style="max-width: 250px;" title="{{ $item->DeatailNotirepair }}">
                                     {{ $item->DeatailNotirepair }}
                                 </div>
+                            </td> --}}
+                            <td class="text-start small">
+                                <div style="white-space: normal; min-width: 250px;">
+                                    {{ $item->DeatailNotirepair }}
+                                </div>
                             </td>
+                            {{-- <td class="text-start small">
+                                <div style="
+                                    display: -webkit-box;
+                                    -webkit-line-clamp: 3;           /* โชว์สูงสุด 3 บรรทัด (แก้เลขได้) */
+                                    -webkit-box-orient: vertical;
+                                    overflow: hidden;
+                                    white-space: normal;             /* ให้ตัดคำลงบรรทัดใหม่ได้ */
+                                    min-width: 250px;
+                                " title="{{ $item->DeatailNotirepair }}">
+                                    {{ $item->DeatailNotirepair }}
+                                </div>
+                            </td> --}}
                             <td class="small">{{ $item->DateNotirepair ? date('d-m-Y H:i', strtotime($item->DateNotirepair)) : '-' }}</td>
                             <td class="small">{{ $item->statusDate ? date('d-m-Y H:i', strtotime($item->statusDate)) : '-' }}</td>
                             <td>
@@ -73,8 +92,9 @@
                             </td>
                             <td>
                                 <div class="d-flex justify-content-center">
-                                    @if ($isClosed)
-                                        <span class="text-success small fw-bold"><i class="bi bi-check-circle-fill"></i> สำเร็จ</span>
+                                    @if ($isClosed || $isRefused)
+                                        {{-- <span class="text-success small fw-bold"><i class="bi bi-check-circle-fill"></i> สำเร็จ</span> --}}
+                                        <span class="text-success small fw-bold"><i class="bi bi-check-circle-fill"></i> ปิดงานเรียบร้อย</span>
                                     @elseif ($isRepairFinished)
                                         <button type="button" class="btn btn-info btn-sm px-3 text-white fw-bold btn-receive-back" 
                                                 data-id="{{ $item->NotirepairId }}" 
@@ -103,6 +123,7 @@
             @php
                 $status = $item->status ?? 'ยังไม่ได้รับของ';
                 $isClosed = $item->closedJobs === 'ปิดงานเรียบร้อย';
+                // $isRefused = str_contains($status, 'ปฏิเสธการซ่อม');
                 $isRepairFinished = str_contains($status, 'ซ่อมงานเสร็จแล้ว');
 
                 $themeColor = $isClosed ? '#198754' : match ($status) {

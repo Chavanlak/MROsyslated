@@ -92,7 +92,7 @@ public static function ShowAllEquipment(Request $req)
     Session::put('zonning', $req->zone);
     Session::put('category', $req->category);
     return view('/repair2',compact('equipment','branch','emailRepair','zone','staffname','branchname','branchEmail','zoneEmail','zonename','branchid','submissionToken'));
-
+    
 
 }
 public static function backtorepair(){

@@ -69,6 +69,8 @@ Route::get('/dashbord', function () {
 // Route::get('/backtorepair', [EquipmentController::class, 'backtorepair'])->middleware('customauth');
 // Route::post('/repair/submit', [NotiRepairController::class, 'saveNotiRepair'])->middleware('customauth');
 
+
+Route::get('/location',[NotiRepairController::class,'testLocation']);
 Route::middleware(['customauth'])->group(function () {
     
     Route::get('/repair', [NotiRepairController::class, 'ShowRepairForm']);
@@ -169,7 +171,8 @@ Route::middleware(['RoleMiddleware:AdminTechnicianStore'])->group(function () {
     // ปุ่มบันทึกสถานะใหม่ (POST Form)
     Route::post('/updaterecive', [NotiRepairController::class, 'updateStatus'])->name('notiupdate');
     Route::post('/noti/accept/{notirepaitid}', [NotiRepairController::class, 'acceptNotisRepair'])->name('noti.accept');
-
+// Route สำหรับการปฏิเสธซ่อม
+    Route::post('/noti/reject/{notirepaitid}', [NotiRepairController::class, 'rejectNotisRepair'])->name('noti.reject');
     
 
 });

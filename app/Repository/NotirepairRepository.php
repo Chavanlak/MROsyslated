@@ -353,6 +353,59 @@ class NotirepairRepository
     
         return $query->orderBy('notirepair.DateNotirepair', 'desc')->paginate($perPage);
     }
+
+    // public static function findBranchName()
+    // {
+    //     // กำหนดชื่อฐานข้อมูล (สมมติชื่อ db_secondary และ db_third)
+    //     $secondaryDB = "fujipos"; 
+    //     $thirdDB = "repairemailbackup";
+    
+    //     $result = DB::table($thirdDB . '.notirepair as nr')
+    //         ->select(
+    //             'nr.equipmenttype',
+    //             'nr.equipment',
+    //             'nr.NotirepairId',
+    //             'loc.Location', // ชื่อสาขาจากฐานข้อมูลที่ 2
+    //             DB::raw('MAX(nr.created_at) as last_post_created_at')
+    //         )
+    //         // เชื่อมตารางข้าม Database
+    //         ->join($secondaryDB . '.Location as loc', 'nr.MBranchInfo_Code ', '=', 'loc.id')
+    //         ->groupBy(
+    //             'nr.equipmenttype', 
+    //             'nr.equipment', 
+    //             'nr.NotirepairId', 
+    //             'loc.Location'
+    //         )
+    //         ->get();
+    //     return $result;
+    // }
+
+    public static function getNotirepairWithBranch()
+    {
+        // สมมติว่าตารางหลักอยู่ที่ repairemailbackup และข้อมูลสาขาอยู่ที่ fujipos (ตามภาพ sidebar)
+        $dbMain = "repairemailbackup";
+        $dbSecondary = "fujipos"; // หรือชื่อ DB ที่เก็บตาราง mastbranchinfo
+    
+        return DB::table($dbMain . '.notirepair as nr')
+            ->select(
+                'nr.NotirepairId',
+                'nr.equipmentId',
+                'e.equipmentName',
+                'nr.branchCode',
+                // 'mb.MBranchInfo_Name_Thai as branchName',
+                'mb.Location as branchName',
+                'nr.DateNotirepair',
+                'nr.DeatailNotirepair'
+            )
+            // เชื่อมตารางอุปกรณ์ (อยู่ใน DB เดียวกับ notirepair)
+            ->leftJoin($dbMain . '.equipment as e', 'nr.equipmentId', '=', 'e.equipmentId')
+            
+            // เชื่อมตารางข้าม Database ไปยังตารางสาขา
+            ->leftJoin($dbSecondary . '.mastbranchinfo as mb', 'nr.branchCode', '=', 'mb.MBranchInfo_Code')
+            
+            ->orderBy('nr.DateNotirepair', 'desc')
+            ->get();
+    }
     //15/1
     // public static function getTrackingListForAdmin($searchTerm = null, $statusFilter = null, $perPage = 10)
     // {

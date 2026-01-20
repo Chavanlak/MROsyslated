@@ -164,6 +164,29 @@
                 margin-right: auto !important;
             }
         }
+
+        /* เเท็กอัพเดทกระพริบในตารางบรรทัดเเรก */
+        /* เพิ่มต่อท้ายในแท็ก <style> */
+            @keyframes highlightFade {
+        0% { background-color: #fff3cd !important; } /* สีเหลืองอ่อนช่วงเริ่มต้น */
+        70% { background-color: #fff3cd !important; } /* คงสีไว้จนถึง 70% ของเวลา */
+        100% { background-color: transparent; }      /* จางหายไป */
+    }
+
+    /* สั่งให้ทั้งแถว (tr) ที่มี class นี้เล่น animation */
+    .highlight-update {
+        animation: highlightFade 2.5s ease-in-out forwards !important; /* ปรับเหลือ 2.5 วินาที */
+    }
+
+    /* สำหรับ Desktop: ทำให้แน่ใจว่า td ภายในแถวไม่มีพื้นหลังสีขาวมาทับ */
+    .highlight-update td {
+        background-color: inherit !important; 
+    }
+
+    /* เพิ่มเส้นขอบสีส้มด้านซ้ายให้เด่นขึ้น (เหมือนในรูป image_9ea8de.png) */
+    .highlight-update {
+        border-left: 5px solid #ffc107 !important;
+    }
     </style>
 
     @stack('styles')
@@ -225,20 +248,21 @@
                     {{-- รหัสสาขา --}}
                     <strong class="text-dark small">
                         [{{ Session::get('branch_code', 'ไม่พบสาขา') }}]
-                        </strong>
+                    </strong>
                     {{-- ชื่อสาขา (ถ้ามี) --}}
                     {{-- @if (Session::has('branch_name'))
                                     <span class="text-muted smaller">{{ Session::get('branch_name') }}</span>
                                 @endif --}}
-                    </div>
                 </div>
-            
+            </div>
+
             <div class="d-flex align-items-center">
                 <div class="d-flex align-items-center ms-auto">
                     @auth
                         {{-- Dropdown สำหรับผู้ใช้งานที่ล็อกอินแล้ว --}}
                         <div class="dropdown">
-                            <button class="btn btn-light dropdown-toggle d-flex align-items-center border" type="button" data-bs-toggle="dropdown">
+                            <button class="btn btn-light dropdown-toggle d-flex align-items-center border" type="button"
+                                data-bs-toggle="dropdown">
                                 <i class="bi bi-person-circle me-1"></i>
                                 {{-- ใช้ Session แทน Auth::user() --}}
                                 <span class="d-none d-sm-block">{{ Session::get('staffname') }}</span>
@@ -250,7 +274,9 @@
                                         <strong class="text-dark">{{ Session::get('role') }}</strong>
                                     </div>
                                 </li>
-                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
                                 <li>
                                     {{-- ปรับปุ่ม Logout ให้ส่งไปที่ Controller ของคุณ --}}
                                     <form action="{{ route('logout') }}" method="POST">
@@ -263,7 +289,6 @@
                             </ul>
                         </div>
                     @else
-                   
                         <div class="dropdown">
                             <button class="btn btn-light dropdown-toggle d-flex align-items-center border" type="button"
                                 data-bs-toggle="dropdown" aria-expanded="false" id="guestProfileDropdown">
@@ -272,7 +297,7 @@
 
                                 {{-- *** แก้ไขตรงนี้: เรียกชื่อจาก Session *** --}}
                                 <span class="d-none d-sm-block">
-                                    {{Session::get('staffname')}}
+                                    {{ Session::get('staffname') }}
                                 </span>
 
                             </button>
