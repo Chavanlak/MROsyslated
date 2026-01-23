@@ -108,7 +108,8 @@
                             // ชื่อสถานะแสดงผล
                             $displayStatus = $status;
                             if ($isClosed) {
-                                $displayStatus = 'ได้รับของคืนเรียบร้อย';
+                                // $displayStatus = 'ได้รับของคืนเรียบร้อย';
+                                $displayStatus = 'สำเร็จ';
                             }
 
                             $color = match ($status) {
@@ -171,7 +172,7 @@
                                             @csrf
                                             <button type="submit" class="btn btn-success btn-sm fw-bold d-flex align-items-center"
                                                 style="padding: 0.25rem 0.5rem; font-size: 0.75rem;"
-                                                onclick="return confirm('ยืนยันการรับงาน Interior รหัส #{{ $item->JobId }}?')">
+                                                onclick="return confirm('ยืนยันการรับงาน  รหัส #{{ $item->JobId }}?')">
                                                 <i class="bi bi-box-seam me-1"></i> รับงาน
                                             </button>
                                         </form>
@@ -209,7 +210,7 @@
                                             </a>
                                         @else
                                             <span class="badge bg-light text-muted border small d-flex align-items-center">
-                                                <i class="bi bi-clock-history me-1"></i> รอหน้าร้านรับคืน
+                                                <i class="bi bi-clock-history me-1"></i> รอหน้าร้านกดปิดงาน
                                             </span>
                                         @endif
                             

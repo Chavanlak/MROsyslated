@@ -688,7 +688,8 @@ class NotiRepairController extends Controller
     // }
     public function updateNotiData(Request $request)
     {
-        $noti = NotiRepair::find($request->NotirepairId);
+        // $noti = NotiRepair::find($request->NotirepairId);
+        $noti = NotiRepair::find($request->JobId);
         if ($noti) {
             $noti->equipmentName = $request->equipmentName;
             $noti->DeatailNotirepair = $request->DeatailNotirepair;
