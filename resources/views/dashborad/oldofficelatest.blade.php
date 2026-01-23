@@ -43,29 +43,6 @@
             max-width: 300px;
             /* ปรับความกว้างสูงสุดตามใจชอบ */
         }
-
-        /* คลุม Group ให้ดูเป็นเนื้อเดียวกัน */
-        .input-group.position-relative {
-            background-color: #fff;
-            transition: all 0.2s ease-in-out;
-        }
-
-        /* เอฟเฟกต์ตอนกด Focus ที่ช่องค้นหา */
-        .input-group.position-relative:focus-within {
-            border-color: #0d6efd !important;
-            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15) !important;
-        }
-
-        /* ปรับสีไอคอนกากบาทให้ดูซอฟต์ลง และเปลี่ยนสีเมื่อเอาเมาส์ไปชี้ */
-        .bi-x-circle-fill {
-            font-size: 1.1rem;
-            color: #ccc;
-            transition: color 0.2s;
-        }
-
-        .bi-x-circle-fill:hover {
-            color: #999;
-        }
     </style>
 
     <div class="container-fluid p-0">
@@ -97,39 +74,23 @@
                     </div>
                 </div>
             </div>
-            {{-- <div class="col-6 col-md-3">
-                <div class="card border-0 shadow-sm" style="border-radius: 12px; border-left: 4px solid #215c18;">
-                    <div class="card-body p-3 text-center text-md-start">
-                        <small class="text-muted d-block text-warning">รอปิดงาน</small>
-                        <span class="h5 fw-bold text-warning">{{ number_format($pendingCount) }}</span>
-                    </div>
-                </div>
-            </div> --}}
-            <div class="col-6 col-md-3">
-                <div class="card border-0 shadow-sm" style="border-radius: 12px; border-left: 4px solid #198754;">
-                    <div class="card-body p-3 text-center text-md-start">
-                        <small class="text-muted d-block text-success">ปิดงานแล้ว</small>
-                        <span class="h5 fw-bold text-success">{{ number_format($closedJobsCount ?? 0) }}</span>
-                    </div>
-                </div>
-            </div>
         </div>
 
         {{-- Search Form --}}
-        {{-- <div class="card border-0 shadow-sm mb-4" style="border-radius: 15px;">
+        <div class="card border-0 shadow-sm mb-4" style="border-radius: 15px;">
             <div class="card-body p-3">
                 <form action="{{ route('officer.tracking') }}" method="GET" class="row g-2">
                     <div class="col-12 col-md-5">
                         <div class="input-group">
                             <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
                             <input type="text" name="search" class="form-control border-start-0"
-                                placeholder="ค้นหา รหัสแจ้งซ่อม, สาขา, อุปกรณ์..." value="{{ request('search') }}">
+                                placeholder="ค้นหา JobId, สาขา, อุปกรณ์..." value="{{ request('search') }}">
                         </div>
                     </div>
                     <div class="col-6 col-md-3">
                         <select name="status" class="form-select">
                             <option value="">ทุกสถานะ</option>
-                            @foreach (['ยังไม่ได้รับของ', 'ได้รับของแล้ว', 'ส่งSuplierแล้ว', 'กำลังดำเนินการซ่อม | ช่างStore', 'ซ่อมงานเสร็จแล้ว | ช่างStore', 'ซ่อมงานเสร็จแล้ว | Supplier', 'ปิดงานเรียบร้อย', 'ปฏิเสธการซ่อม'] as $st)
+                            @foreach (['ยังไม่ได้รับของ', 'ได้รับของแล้ว', 'ส่งSuplierแล้ว', 'กำลังดำเนินการซ่อม | ช่างStore', 'ซ่อมงานเสร็จแล้ว | ช่างStore', 'ซ่อมงานเสร็จแล้ว | Supplier', 'ปิดงานเรียบร้อย'] as $st)
                                 <option value="{{ $st }}" {{ request('status') == $st ? 'selected' : '' }}>
                                     {{ $st }}</option>
                             @endforeach
@@ -145,61 +106,7 @@
                     @endif
                 </form>
             </div>
-        </div> --}}
-        {{-- Search Form - Modern & Compact Design --}}
-        {{-- <div class="card border-0 shadow-sm mb-2" style="border-radius: 16px;"> --}}
-            <div class="card-body p-3">
-                <form action="{{ route('officer.tracking') }}" method="GET">
-                    <div class="row g-2 align-items-center">
-
-                        {{-- ช่องค้นหาหลัก --}}
-                        <div class="col-12 col-lg-4">
-                            {{-- ใช้ position-relative เพื่อให้ปุ่ม x วางทับในช่องได้ --}}
-                            <div class="input-group position-relative shadow-none border rounded-3">
-                                <span class="input-group-text bg-transparent border-0 pe-1">
-                                    <i class="bi bi-search text-muted"></i>
-                                </span>
-
-                                <input type="text" name="search" id="searchInput"
-                                    class="form-control border-0 ps-2 pe-5" {{-- เว้น padding ขวา (pe-5) เพื่อไม่ให้ข้อความทับปุ่ม x --}}
-                                    placeholder="ค้นหา รหัสแจ้งซ่อม, สาขา, อุปกรณ์..." value="{{ request('search') }}"
-                                    style="box-shadow: none; background: transparent;">
-
-                                {{-- ปุ่มกากบาท (จะปรากฏเฉพาะเมื่อมีข้อความ) --}}
-                                @if (request('search'))
-                                    <a href="{{ route('officer.tracking') }}"
-                                        class="position-absolute end-0 top-50 translate-middle-y me-2 text-muted"
-                                        style="z-index: 5; text-decoration: none;">
-                                        <i class="bi bi-x-circle-fill"></i>
-                                    </a>
-                                @endif
-                            </div>
-                        </div>
-
-                        {{-- ตัวเลือกสถานะ --}}
-                        <div class="col-8 col-lg-2">
-                            <select name="status" class="form-select border rounded-3 shadow-none">
-                                <option value="">ทุกสถานะ</option>
-                                @foreach (['ยังไม่ได้รับของ', 'ได้รับของแล้ว', 'ส่งSuplierแล้ว', 'กำลังดำเนินการซ่อม | ช่างStore', 'ซ่อมงานเสร็จแล้ว | ช่างStore', 'ซ่อมงานเสร็จแล้ว | Supplier', 'ปิดงานเรียบร้อย', 'ปฏิเสธการซ่อม'] as $st)
-                                    <option value="{{ $st }}" {{ request('status') == $st ? 'selected' : '' }}>
-                                        {{ $st }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        {{-- ปุ่มค้นหาแบบ Compact --}}
-                        <div class="col-4 col-lg-1">
-                            <button type="submit"
-                                class="btn btn-primary w-100 fw-bold rounded-3 d-flex align-items-center justify-content-center">
-                                <i class="bi bi-search me-2 d-none d-sm-inline"></i> ค้นหา
-                            </button>
-                        </div>
-
-                    </div>
-                </form>
-            </div>
-        {{-- </div> --}}
+        </div>
 
         {{-- Desktop View --}}
         <div class="card shadow-sm d-none d-md-block border-0" style="border-radius: 12px; overflow: hidden;">
@@ -208,20 +115,17 @@
                     <table id="officeTrackingTable" class="table table-hover align-middle mb-0 w-100">
                         <thead>
                             <tr class="text-center align-middle">
-                                {{-- <th style="width: 8%;">JobId</th> --}}
-                                <th>ลำดับ</th>
-                                <th style="width: 8%;">รหัสแจ้งซ่อม</th>
+                                <th style="width: 8%;">JobId</th>
                                 <th style="width: 10%;">สาขา</th>
                                 <th class="text-start" style="width: 15%;">อุปกรณ์</th>
-                                {{-- <th class="text-center">อุปกรณ์</th> --}}
+                                
                                 {{-- จุดสำคัญ: ให้พื้นที่รายละเอียด 35% ของหน้าจอ --}}
-                                {{-- <th style="width: 35%;">รายละเอียด</th>  --}}
-                                <th>รายละเอียด</th>
+                                <th style="width: 35%;">รายละเอียด</th> 
                                 <th style="width: 10%;">สถานะปัจจุบัน</th>
-                                <th style="width: 8%;">วันที่รับของซ่อม</th>
-                                <th style="width: 8%;">ผู้รับของซ่อม</th>
-                                <th style="width: 6%;">อัปเดตล่าสุด</th>
-                                <th style="width: 8%;">วันที่ปิดงาน/โดย</th>
+                                <th style="width: 8%;">รับของ</th>
+                                <th style="width: 8%;">ผู้รับ</th>
+                                <th style="width: 6%;">อัปเดต</th>
+                                <th style="width: 8%;">ปิดงาน</th>
                             </tr>
                         </thead>
                         <tbody class="text-center">
@@ -273,43 +177,27 @@
                                     };
                                 @endphp
                                 <tr>
-                                    <td>{{ ($jobs->currentPage() - 1) * $jobs->perPage() + $loop->iteration }}</td>
-                                    {{-- <td class="fw-bold text-primary" >#{{ $job->JobId ?? $job->NotirepairId }}</td> --}}
-                                    <td>
-                                        <span class="text-primary fw-bold" style="font-size: 0.75rem;">
-                                            #{{ $job->JobId ?? $job->NotirepairId }}
-                                        </span>
-                                    </td>
-
+                                    <td class="fw-bold text-primary" >#{{ $job->JobId ?? $job->NotirepairId }}</td>
                                     <td>
                                         <div class="fw-bold text-dark">{{ $job->branchCode }}</div>
                                         <div class="small text-muted">
                                             {{ $branchNames[$job->branchCode] ?? 'ไม่พบชื่อสาขา' }}</div>
                                     </td>
-                                    {{-- <td class="text-start small">
+                                    <td class="text-start">
                                         <div class="fw-medium text-dark text-truncate" style="max-width: 180px;"
                                             title="{{ $job->equipmentName }}">
                                             {{ $job->equipmentName }}
                                         </div>
-                                    </td> --}}
-                                    <td class="text-start small">
-                                        {{-- ลบ text-truncate และ max-width ออก ใส่ white-space: normal แทน --}}
-                                        <div class="fw-medium text-dark" style="white-space: normal;">
-                                            {{ $job->equipmentName }}
-                                        </div>
                                     </td>
+
                                     {{-- จุดที่แก้ไข: แสดงรายละเอียดทั้งหมด (ลบ text-truncate ออก) --}}
                                     {{-- <td class="text-start">
                                         <div style="white-space: normal; min-width: 250px;">
                                             {{ $job->DeatailNotirepair }}
                                         </div>
                                     </td> --}}
-                                    <td class="text-start small">
-                                        <div style="white-space: normal; min-width: 250px;">
-                                            {{ $job->DeatailNotirepair }}
-                                        </div>
-                                    </td>
-                                    {{-- <td class="text-start">
+                                    <td class="text-start">
+                                        {{-- ใช้ div ครอบเพื่อจัดสไตล์ --}}
                                         <div style="
                                             display: -webkit-box;
                                             -webkit-line-clamp: 2;           /* โชว์แค่ 2 บรรทัด (แก้เลขได้ถ้าอยากได้ 3) */
@@ -320,12 +208,12 @@
                                             max-width: 350px;                /* จำกัดความกว้างไม่ให้ดันช่องอื่น */
                                             line-height: 1.5;                /* ระยะห่างบรรทัดให้อ่านง่าย */
                                             height: auto;
-                                        " title="{{ $job->DeatailNotirepair }}"> 
+                                        " title="{{ $job->DeatailNotirepair }}">  {{-- ใส่ title เพื่อให้เมาส์ชี้แล้วเห็นข้อความเต็ม --}}
                                             
                                             {{ $job->DeatailNotirepair }}
                                             
                                         </div>
-                                    </td> --}}
+                                    </td>
                                     <td>
                                         <span
                                             class="badge badge-status bg-{{ $statusStyle['bg'] }} text-{{ $statusStyle['text'] }} shadow-sm">
@@ -356,11 +244,11 @@
                                         @if ($job->closedJobs !== 'ยังไม่ปิดงาน' || $isRefused)
                                             @if ($job->DateCloseJobs)
                                                 <div class="text-success fw-bold small">
-                                                    {{ date('d/m/Y H:i', strtotime($job->DateCloseJobs)) }}</div>
+                                                    {{ date('d/m/Y', strtotime($job->DateCloseJobs)) }}</div>
                                             @endif
                                             <div class="text-muted extra-small">
                                                 <i class="bi bi-person-check"></i>
-                                                {{ Str::limit($job->closer_name ?? '-', 20) }}
+                                                {{ Str::limit($job->closer_name ?? '-', 12) }}
                                             </div>
                                         @else
                                             <span

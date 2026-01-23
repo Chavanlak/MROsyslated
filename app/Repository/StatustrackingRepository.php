@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Repository;
+
 use App\Models\Statustracking;
 
 use App\Models\NotiRepair;
@@ -75,7 +76,7 @@ class StatustrackingRepository
         return Statustracking::all();
     }
     //one many relation เพื่อดึงสถานะล่าสุดของ notirepair
-    public static function updateNotiStatus($notirepaitid, $status, $statusDate,$staffcode,$staffname)
+    public static function updateNotiStatus($notirepaitid, $status, $statusDate, $staffcode, $staffname)
     {
         $statustracking = new Statustracking();
         $statustracking->NotirepairId = $notirepaitid;
@@ -118,8 +119,8 @@ class StatustrackingRepository
             'statusDate'   => now(),
         ]);
     }
-    
-    
+
+
     public static function updateStatusNotirepair($notirepaitid, $statusData)
     {
         $statustracking = new Statustracking();
@@ -155,18 +156,24 @@ class StatustrackingRepository
 
         if ($notiDetail) {
             $notiDetail->latest_status = self::getLatestStatusByNotiRepairId($notirepaitid);
+            $lastTracking = $notiDetail->statusTracking->sortByDesc('statustrackingId')->first();
+
+            // ถ้ามีประวัติ ให้เอา statusDate มาใส่ตัวแปร last_update
+            $notiDetail->last_update = $lastTracking ? $lastTracking->statusDate : null;
         }
         return $notiDetail;
     }
     // public static function getItemComplte(){
     //     return Statustracking::select('status','notirepairId')->where('status','=','ได้รับของเเล้ว')->get();
     // }
-    public static function CountItemComplte(){
-        return Statustracking::whereIn('status',['ได้รับของเเล้ว'])
-        ->distinct('notirepairId')
-        ->count('notirepairId');
+    public static function CountItemComplte()
+    {
+        return Statustracking::whereIn('status', ['ได้รับของแล้ว'])
+            ->distinct('notirepairId')
+            ->count('notirepairId');
     }
-    public static function CountReciveIncomplteItem(){
+    public static function CountReciveIncomplteItem()
+    {
         return Statustracking::whereIn('status', ['ยังไม่ได้รับของ']) // แก้ตรงนี้
             ->distinct('notirepairId')
             ->count('notirepairId');
@@ -177,53 +184,53 @@ class StatustrackingRepository
     //     ->get();
     // }
     public static function CountCompleteStatus()
-{
-    // ใช้ whereIn แทน orWhere เพื่อความสะอาด
-    // ใช้ distinct('notirepairId') เพื่อนับจำนวนงานที่ไม่ซ้ำกัน (Unique Jobs)
-    // ใช้ count() เพื่อส่งกลับเป็นตัวเลข
-    
-    return Statustracking::whereIn('status', [
-            'ซ่อมงานเสร็จเเล้ว | ช่างStore', 
-            'ซ่อมงานเสร็จเเล้ว | Supplier'
+    {
+        // ใช้ whereIn แทน orWhere เพื่อความสะอาด
+        // ใช้ distinct('notirepairId') เพื่อนับจำนวนงานที่ไม่ซ้ำกัน (Unique Jobs)
+        // ใช้ count() เพื่อส่งกลับเป็นตัวเลข
+
+        return Statustracking::whereIn('status', [
+            'ซ่อมงานเสร็จแล้ว | ช่างStore',
+            'ซ่อมงานเสร็จแล้ว | Supplier'
         ])
-        ->distinct('notirepairId') 
-        ->count('notirepairId');
-}
-public static function CountPendingStatus(){
-    return Statustracking::whereIn('status',['กำลังดำเนินการซ่อม | ช่างStore'])
-    ->distinct('notirepairId')
-    ->count('notirepairId');
-}
-//
+            ->distinct('notirepairId')
+            ->count('notirepairId');
+    }
+    public static function CountPendingStatus()
+    {
+        return Statustracking::whereIn('status', ['กำลังดำเนินการซ่อม | ช่างStore'])
+            ->distinct('notirepairId')
+            ->count('notirepairId');
+    }
+    //
 
-public static function getAll(){
-    return Statustracking::all();
-}
-public static function getAllStatusByNotirepairId($notiRepairId){
-    return Statustracking::where('NotirepairId')->get();
+    public static function getAll()
+    {
+        return Statustracking::all();
+    }
+    public static function getAllStatusByNotirepairId($notiRepairId)
+    {
+        return Statustracking::where('NotirepairId')->get();
+    }
+    public static function closedJob() {}
+    public static function trackingrepair()
+    {
+        // $branchname = MastbranchRepository::getBranchName($branchid);
 
-}
-public static function closedJob(){
+    }
 
-}
-public static function trackingrepair(){
-    // $branchname = MastbranchRepository::getBranchName($branchid);
-    
-}
+    // public static function closeedJobStatus(){
 
-// public static function closeedJobStatus(){
-    
-//     $isCompleted =  Statustracking::whereIn('status', [
-//         'ซ่อมงานเสร็จเเล้ว | ช่างStore', 
-//         'ซ่อมงานเสร็จเเล้ว | Supplier'
-//     ])
-//     ->distinct('notirepairId')
-    
-//     if($isCompleted){
-//         Statustracking::select('colsedJobs')->whereNotNull()->get();
+    //     $isCompleted =  Statustracking::whereIn('status', [
+    //         'ซ่อมงานเสร็จเเล้ว | ช่างStore', 
+    //         'ซ่อมงานเสร็จเเล้ว | Supplier'
+    //     ])
+    //     ->distinct('notirepairId')
 
-// }
-// return $closeJobs;
-// }
+    //     if($isCompleted){
+    //         Statustracking::select('colsedJobs')->whereNotNull()->get();
+
+    // }
+    // return $closeJobs;
+    // }
 }
-

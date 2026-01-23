@@ -17,120 +17,87 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     @endif
+{{-- Search Form Section --}}
+    {{-- <div class="card border-0 shadow-sm mb-4" style="border-radius: 16px;"> --}}
+        <div class="card-body p-3">
+            {{-- action="" ปล่อยว่างไว้เพื่อให้ส่งค่ากลับมาที่หน้าเดิม --}}
+            <form action="" method="GET">
+                <div class="row g-2 align-items-center">
 
+                    {{-- 1. ช่องค้นหา (ปรับให้แคบลงเป็น col-lg-4 ตามที่ขอ) --}}
+                    <div class="col-12 col-lg-4">
+                        <div class="input-group position-relative shadow-none border rounded-3">
+                            <span class="input-group-text bg-transparent border-0 pe-1">
+                                <i class="bi bi-search text-muted"></i>
+                            </span>
+                            <input type="text" name="search" class="form-control border-0 ps-2 pe-5"
+                                placeholder="ค้นหา รหัส, อุปกรณ์, สาขา..." value="{{ request('search') }}"
+                                style="box-shadow: none; background: transparent;">
+                            
+                            {{-- ปุ่ม X สำหรับล้างคำค้นหา --}}
+                            @if(request('search'))
+                                <a href="{{ url()->current() }}" 
+                                   class="position-absolute end-0 top-50 translate-middle-y me-2 text-muted"
+                                   style="z-index: 5;">
+                                    <i class="bi bi-x-circle-fill"></i>
+                                </a>
+                            @endif
+                        </div>
+                    </div>
+
+                    {{-- 2. ตัวเลือกสถานะ (ให้กว้างขึ้นเป็น col-lg-6 เพื่อให้อ่านสถานะยาวๆ ได้ครบ) --}}
+                    <div class="col-8 col-lg-2">
+                        <select name="status" class="form-select border rounded-3 shadow-none">
+                            <option value="">ทุกสถานะ</option>
+                            @php
+                                $statuses = [
+                                    'ยังไม่ได้รับของ', 
+                                    'ได้รับของแล้ว', 
+                                    'ส่งSuplierแล้ว', 
+                                    'กำลังดำเนินการซ่อม | ช่างStore', 
+                                    'ซ่อมงานเสร็จแล้ว | ช่างStore', 
+                                    'ซ่อมงานเสร็จแล้ว | Supplier', 
+                                    'ได้รับของคืนเรียบร้อย', 
+                                    'ปฏิเสธการซ่อม'
+                                ];
+                            @endphp
+                            @foreach ($statuses as $st)
+                                <option value="{{ $st }}" {{ request('status') == $st ? 'selected' : '' }}>
+                                    {{ $st }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    {{-- 3. ปุ่มค้นหา --}}
+                    <div class="col-4 col-lg-1">
+                        <button type="submit" class="btn btn-primary w-100 fw-bold rounded-3">
+                            <i class="bi bi-search me-1"></i> ค้นหา
+                        </button>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+    {{-- </div> --}}
     {{-- Desktop View --}}
     <div class="card shadow-sm d-none d-md-block border-0">
         <div class="card-body table-responsive">
             <table id="notiTable" class="table table-hover align-middle">
                 <thead class="table-primary text-center">
                     <tr>
+                        <th style="width: 5%">ลำดับ</th>
                         <th style="width: 10%">รหัสเเจ้งซ่อม</th>
                         <th style="width: 12%">อุปกรณ์</th>
                         <th style="width: 23%">รายละเอียด</th>
                         <th style="width: 15%">สาขา</th>
-                        <th style="width: 10%">วันที่แจ้ง</th>
+                        <th style="width: 10%">วันที่แจ้งซ่อม</th>
                         <th style="width: 10%">อัปเดตล่าสุด</th>
-                        <th style="width: 10%">สถานะ</th>
+                        <th style="width: 10%">สถานะปัจจุบัน</th>
                         <th style="width: 15%">จัดการ</th>
                     </tr>
                 </thead>
-                {{-- <tbody class="text-center">
-                    @foreach ($noti as $item)
-                        @php
-                            $status = $item->status ?? 'ยังไม่ได้รับของ';
-                            $isCompleted = str_contains($status, needle: 'ซ่อมงานเสร็จแล้ว');
-                            $displayStatus = $isCompleted ? 'ซ่อมเสร็จสิ้น' : $status;
-                            $color = match ($status) {
-                                'ยังไม่ได้รับของ' => 'danger',
-                                'ได้รับของแล้ว' => 'primary',
-                                'กำลังดำเนินการซ่อม | ช่างStore' => 'warning',
-                                'ส่งSuplierแล้ว' => 'info',
-                                'ซ่อมงานเสร็จแล้ว | ช่างStore', 'ซ่อมงานเสร็จแล้ว | Supplier' => 'success',
-                                'ได้รับของคืนเรียบร้อย' => 'sucess',
-                                default => 'secondary',
-                            };
-                        @endphp
-                        <tr>
-                            <td>
-                                <span class="text-primary fw-bold" style="font-size: 0.85rem;">
-                                    #{{$item->JobId ?? $item->NotirepairId}}
-                                </span>
-                            </td>
 
-                            <td class="fw-bold">{{$item->equipmentName}}</td>
-
-                            <td class="text-start small">
-                                <div class="text-truncate" style="max-width: 220px;" title="{{$item->DeatailNotirepair}}">
-                                    {{$item->DeatailNotirepair}}
-                                </div>
-                            </td>
-
-                            <td>
-                                <div class="fw-bold text-dark">{{$item->branchCode}}</div>
-                                <div class="small text-muted">เอสพลานาด</div>
-                            </td>
-
-                            <td class="small">
-                                {{ $item->DateNotirepair ? date('d-m-Y H:i', strtotime($item->DateNotirepair)) : '-' }}
-                            </td>
-
-                            <td class="small">
-                                {{ $item->statusDate ? date('d-m-Y H:i', strtotime($item->statusDate)) : '-' }}
-                            </td>
-
-                            <td>
-                                <span class="badge bg-{{ $color }} fw-normal">{{ $displayStatus }}</span>
-                            </td>
-
-                            <td>
-                                <div class="d-flex gap-2 justify-content-center">
-                                    @if ($status === 'ยังไม่ได้รับของ')
-                                        <form action="{{ route('noti.accept', $item->NotirepairId) }}" method="POST">
-                                            @csrf
-                                            <button type="submit" class="btn btn-success btn-sm px-3 fw-bold" onclick="return confirm('ยืนยันการรับอุปกรณ์?')">
-                                                <i class="bi bi-box-seam me-1"></i> รับของ
-                                            </button>
-                                        </form>
-                                    @elseif($status === 'รับของแล้ว')
-                                         <a href="{{ route('noti.show_update_form', $item->NotirepairId) }}"
-                                            class="btn btn-warning btn-sm" title="อัปเดตสถานะ">
-                                            <i class="bi bi-pencil-square"></i> อัปเดต
-                                        </a>
-                            
-                                    @elseif($status === 'ซ่อมงานเสร็จแล้ว | ช่างStore')
-                                        <a href="{{ route('noti.edit', $item->NotirepairId) }}"
-                                            class="btn btn-primary btn-sm fw-bold">
-                                            <i class="bi bi-pencil"></i> แก้ไข
-                                        </a>
-                                    @elseif($status === 'ซ่อมงานเสร็จแล้ว | Supplier')
-                                        <a href="{{ route('noti.edit', $item->NotirepairId) }}"
-                                            class="btn btn-primary btn-sm fw-bold">
-                                            <i class="bi bi-pencil"></i> แก้ไข
-                                        </a>
-                                    @elseif($status === 'ได้รับของคืนเรียบร้อย')
-                                    <button class="btn btn-sm btn-success border-0" title="งานเสร็จสิ้นแล้ว" disabled>
-                                        <i class="bi bi-check-circle-fill"></i> สำเร็จ
-                                    </button>
-                                   
-                                    @else
-                                
-                                        @if (!$isCompleted)
-                                            <a href="{{ route('noti.show_update_form', $item->NotirepairId) }}"
-                                                class="btn btn-warning btn-sm" title="อัปเดตสถานะ">
-                                                <i class="bi bi-pencil-square"></i> อัปเดต
-                                            </a>
-                                        @endif
-                            
-                                        <a href="{{ route('noti.edit', $item->NotirepairId) }}"
-                                            class="btn btn-primary btn-sm fw-bold">
-                                            <i class="bi bi-pencil"></i> แก้ไข
-                                        </a>
-                                    @endif
-                                </div>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody> --}}
                 <tbody class="text-center">
                     @foreach ($noti as $item)
                         @php
@@ -161,26 +128,30 @@
                                 default => 'secondary',
                             };
                         @endphp
+                  
                         <tr id="row-{{ $item->JobId ?? $item->NotirepairId }}">
                             <td>
-                                <span class="text-primary fw-bold" style="font-size: 0.85rem;">
+                                {{-- สูตร: (หน้าปัจจุบัน - 1) * จำนวนต่อหน้า + ลำดับในหน้านี้ --}}
+                                {{ ($noti->currentPage() - 1) * $noti->perPage() + $loop->iteration }}
+                            </td>
+                            <td>
+                                <span class="text-primary fw-bold" style="font-size: 0.75rem;">
                                     #{{ $item->JobId ?? $item->NotirepairId }}
                                 </span>
                             </td>
 
-                            <td class="fw-bold">{{ $item->equipmentName }}</td>
+                            <td class="text-start small fw-bold">{{ $item->equipmentName }}</td>
 
-                            {{-- <td class="text-start small">
-                                <div class="text-truncate" style="max-width: 220px;" title="{{ $item->DeatailNotirepair }}">
-                                    {{ $item->DeatailNotirepair }}
-                                </div>
-                            </td> --}}
-                            <td style="min-width: 200px;"> 
+                            {{-- <td style="min-width: 200px;">
                                 <div style="white-space: normal; word-wrap: break-word; text-align: left;">
                                     {{ $item->DeatailNotirepair }}
                                 </div>
+                            </td> --}}
+                            <td class="text-start small">
+                                <div style="white-space: normal; min-width: 250px;">
+                                    {{ $item->DeatailNotirepair }}
+                                </div>
                             </td>
-
                             <td>
                                 <div class="fw-bold text-dark">{{ $item->branchCode }}</div>
                                 {{-- <div class="small text-muted">เอสพลานาด</div> --}}
@@ -207,7 +178,7 @@
                                     {{ $displayStatus }}
                                 </span>
                             </td>
-                            <td>
+                            <td class="dt-center">
                                 <div class="d-flex gap-2 justify-content-center">
                                     {{-- CASE 1: ของยังมาไม่ถึงมือช่าง --}}
                                     @if ($status === 'ยังไม่ได้รับของ')
@@ -275,9 +246,10 @@
             </table>
         </div>
     </div>
-    <div class="mt-4 d-flex justify-content-center">
-        {{ $noti->links('pagination::bootstrap-5') }}
-    </div>
+{{-- Pagination สำหรับ Desktop (ให้แสดงเฉพาะจอ md ขึ้นไป) --}}
+<div class="mt-4 d-flex justify-content-center d-none d-md-flex">
+    {{ $noti->links('pagination::bootstrap-5') }}
+</div>
     </div>
 
     {{-- Mobile View --}}
@@ -311,8 +283,14 @@
                     <div class="card-body p-3">
                         {{-- Header: ID และ Status Badge --}}
                         <div class="d-flex justify-content-between align-items-start mb-2">
+                            {{-- <div>
+                                
+                                <span class="text-muted small fw-bold">#{{ $item->JobId }}</span>
+                                <h6 class="fw-bold mb-0 text-dark">{{ $item->equipmentName }}</h6>
+                            </div> --}}
                             <div>
-                                {{-- <span class="text-muted small fw-bold">#{{ $item->NotirepairId}}</span> --}}
+                                <span class="badge bg-secondary mb-1">ลำดับที่ {{ ($noti->currentPage() - 1) * $noti->perPage() + $loop->iteration }}</span>
+                                <br>
                                 <span class="text-muted small fw-bold">#{{ $item->JobId }}</span>
                                 <h6 class="fw-bold mb-0 text-dark">{{ $item->equipmentName }}</h6>
                             </div>
@@ -346,24 +324,7 @@
 
                         <hr class="my-2 opacity-25">
 
-                        {{-- Footer: วันที่ และ ปุ่มจัดการ --}}
-                        {{-- <div class="d-flex justify-content-between align-items-center mt-3">
-                            <div class="text-muted" style="font-size: 0.75rem;">
-                                <div><i class="bi bi-calendar3 me-1"></i>
-                                    {{ date('d/m/y H:i', strtotime($item->DateNotirepair)) }}</div>
-                            </div>
 
-                            @if (!$isCompleted)
-                                <a href="{{ route('noti.show_update_form', $item->NotirepairId) }}"
-                                    class="btn btn-warning btn-sm fw-bold px-3 shadow-sm" style="border-radius: 8px;">
-                                    <i class="bi bi-pencil-square me-1"></i> อัปเดต
-                                </a>
-                            @else
-                                <span class="text-success small fw-bold">
-                                    <i class="bi bi-check-all"></i> งานเรียบร้อย
-                                </span>
-                            @endif
-                        </div> --}}
                         {{-- ค้นหาส่วนของปุ่มจัดการด้านล่างของการ์ด Mobile --}}
                         <div class="d-flex justify-content-between align-items-center mt-3">
                             <div class="text-muted" style="font-size: 0.75rem;">
@@ -376,7 +337,7 @@
                                     <form action="{{ route('noti.accept', $item->NotirepairId) }}" method="POST">
                                         @csrf
                                         <button type="submit" class="btn btn-success btn-sm fw-bold px-3"
-                                            onclick="return confirm('ยืนยันการรับของ?')">
+                                            onclick="return confirm('ยืนยันการรับของซ่อม?')">
                                             รับของซ่อม
                                         </button>
                                     </form>
@@ -388,12 +349,16 @@
                                         </button>
                                     </form>
                                 @else
+                                    {{-- <a href="{{ route('noti.edit', $item->NotirepairId) }}"
+                                        class="btn btn-outline-primary btn-sm rounded-pill shadow-sm">
+                                        <i class="bi bi-pencil"></i>
+                                    </a> --}}
+
+                                    @if (!$isCompleted)
                                     <a href="{{ route('noti.edit', $item->NotirepairId) }}"
                                         class="btn btn-outline-primary btn-sm rounded-pill shadow-sm">
                                         <i class="bi bi-pencil"></i>
                                     </a>
-
-                                    @if (!$isCompleted)
                                         <a href="{{ route('noti.show_update_form', $item->NotirepairId) }}"
                                             class="btn btn-warning btn-sm fw-bold px-3 shadow-sm"
                                             style="border-radius: 8px;">
@@ -418,91 +383,56 @@
         </div>
     </div>
 
-    {{-- @push('scripts')
-        <script>
-            $(document).ready(function() {
-                if (window.matchMedia('(min-width: 768px)').matches) {
-                    $('#notiTable').DataTable({
-                        "searching": false,
-                        "paging": false,
-                        "ordering": true,
-                        "info": false,
-                        "autoWidth": false,
-                        // "order": [[5, "desc"]],
-                        "columnDefs": [{
-                                "targets": 0,
-                                "className": "dt-center"
-                            },
-                            {
-                                "targets": 1,
-                                "className": "dt-center"
-                            },
-                            {
-                                "targets": 2,
-                                "className": "text-start"
-                            },
-                            {
-                                "targets": 3,
-                                "className": "dt-center"
-                            }, // ✅ คอลัมน์สาขา/โซน
-                            {
-                                "targets": 4,
-                                "className": "dt-center"
-                            },
-                            {
-                                "targets": 5,
-                                "className": "dt-center"
-                            },
-                            {
-                                "targets": 6,
-                                "className": "dt-center"
-                            },
-                            {
-                                "targets": 7,
-                                "className": "dt-center"
-                                // "orderable": false
-                            }
-                        ],
-                        "language": {
-                            "emptyTable": "ไม่พบข้อมูล",
-                            "zeroRecords": "ไม่พบข้อมูลที่ตรงกัน"
-                        }
-                    });
-                }
-            });
-        </script>
-    @endpush --}}
     @push('scripts')
-        {{-- <script>
-        $(document).ready(function() {
-            // เช็คว่าอยู่ในหน้า Desktop และมีตารางอยู่จริง
-            if (window.matchMedia('(min-width: 768px)').matches && $('#notiTable').length > 0) {
-                
-                // ทำลาย Instance เก่าก่อนถ้ามี (ป้องกัน Error reinitialise)
-                if ($.fn.DataTable.isDataTable('#notiTable')) {
-                    $('#notiTable').DataTable().destroy();
-                }
+        <script>
+     $(document).ready(function() {
+    if (window.matchMedia('(min-width: 768px)').matches) {
+        // 1. เริ่มทำงาน DataTable
+        var table = $('#notiTable').DataTable({
+            "searching": false,
+            "paging": false, 
+            "ordering": true,
+            "info": false,
+            "autoWidth": false,
+            
+            // ✅ แก้ไขตรงนี้: ใส่ [] เพื่อไม่ให้ DataTable จัดเรียงใหม่ตอนโหลดหน้า
+            // มันจะแสดงผลตามลำดับที่ส่งมาจาก Controller (DB) ทันที
+            "order": [], 
 
-                $('#notiTable').DataTable({
-                    "searching": false, // ปิด search เพราะใช้จาก Controller
-                    "paging": false,    // ปิด paging เพราะใช้ Laravel Pagination
-                    "ordering": true,   // เปิดตัว Sort หัวตาราง (ลูกศรจะไม่หาย)
-                    "info": false,
-                    "autoWidth": false,
-                    "order": [[5, "desc"]], // ให้คอลัมน์ "อัปเดตล่าสุด" เรียงจากใหม่ไปเก่าทันที
-                    "columnDefs": [
-                        { "targets": [0, 1, 3, 4, 5, 6, 7], "className": "dt-center" },
-                        { "targets": 2, "className": "text-start" },
-                        { "targets": 7, "orderable": false } // ปิดการเรียงลำดับในช่อง "จัดการ"
-                    ],
-                    "language": {
-                        "emptyTable": "ไม่พบข้อมูล",
-                        "zeroRecords": "ไม่พบข้อมูลที่ตรงกัน"
-                    }
-                });
-            }
+            "columnDefs": [
+                { "targets": [0,1,3,4,5,6,7], "className": "dt-center" },
+                // { "targets": 2, "className": "text-start" },
+                { "targets": 3, "className": "text-start" },
+                { "targets": 7, "className": "dt-center", "orderable": false } // ปุ่มจัดการห้าม Sort
+            ],
+            "language": { "emptyTable": "ไม่พบข้อมูล" }
         });
-    </script> --}}
+
+        // 2. ระบบ Highlight แถวที่เพิ่งอัปเดต
+        const updatedId = "{{ session('updated_id') }}";
+        if (updatedId) {
+            let targetRow = $(`#row-${updatedId}`);
+            if (targetRow.length) {
+                // ใส่ Class สำหรับกะพริบสี (ต้องมี CSS highlight-update ในไฟล์ด้วย)
+                targetRow.addClass('highlight-update'); 
+
+                // เลื่อนหน้าจอไปหาแถวที่อัปเดต
+                $('html, body').animate({
+                    scrollTop: targetRow.offset().top - 150
+                }, 600);
+
+                // ลบ Class ออกหลังจากแสดงผลเสร็จ
+                setTimeout(function() {
+                    targetRow.removeClass('highlight-update');
+                }, 2500);
+            }
+        }
+    }
+});
+        </script>
+    @endpush
+    {{-- @push('scripts')
+       
         <script>
             $(document).ready(function() {
                 // --- ส่วนที่ 1: จัดการ DataTable (เดิมของคุณ) ---
@@ -521,17 +451,23 @@
                             [5, "desc"]
                         ], // เรียงตาม "อัปเดตล่าสุด" จากภาพ
                         "columnDefs": [{
-                                "targets": [0, 1, 3, 4, 5, 6],
+                                "targets": [0, 1, 3, 4, 5, 6, 7],
                                 "className": "dt-center"
                             }, // ปรับ target ตามจำนวน column จริง
                             {
-                                "targets": 2,
+                                // "targets": 2,
+                                "targets": [2],
                                 "className": "text-start"
                             },
                             {
-                                "orderable": false,
-                                "targets": -1
-                            } // ปิดการเรียงคอลัมน์สุดท้าย (ปุ่มจัดการ)
+                                "targets": [7], // คอลัมน์จัดการ
+                                "orderable": false, // ปิดการ Sort (ลูกศรจะหายไป)
+                                "searchable": false // ไม่ให้ค้นหาข้อมูลในคอลัมน์นี้
+                            }
+                            // {
+                            //     "orderable": false,
+                            //     "targets": -1
+                            // }
                         ],
                         "language": {
                             "emptyTable": "ไม่พบข้อมูล",
@@ -541,26 +477,26 @@
                 }
 
                 // --- ส่วนที่ 2: ระบบ Highlight แถวที่เพิ่งอัปเดต (ผสมใหม่) ---
-              // --- ส่วนที่ 2: ระบบ Highlight แถวที่เพิ่งอัปเดต ---
-const updatedId = "{{ session('updated_id') }}";
-if (updatedId) {
-    let targetRow = $(`#row-${updatedId}`);
+                // --- ส่วนที่ 2: ระบบ Highlight แถวที่เพิ่งอัปเดต ---
+                const updatedId = "{{ session('updated_id') }}";
+                if (updatedId) {
+                    let targetRow = $(`#row-${updatedId}`);
 
-    if (targetRow.length) {
-        targetRow.addClass('highlight-update');
+                    if (targetRow.length) {
+                        targetRow.addClass('highlight-update');
 
-        // เลื่อนหน้าจอไปหา
-        $('html, body').animate({
-            scrollTop: targetRow.offset().top - 150
-        }, 600); // เลื่อนหน้าจอเร็วขึ้นเล็กน้อย
+                        // เลื่อนหน้าจอไปหา
+                        $('html, body').animate({
+                            scrollTop: targetRow.offset().top - 150
+                        }, 600); // เลื่อนหน้าจอเร็วขึ้นเล็กน้อย
 
-        // ลบ Class ออกหลังจาก 2.5 วินาที (เท่ากับเวลาใน CSS)
-        setTimeout(function() {
-            targetRow.removeClass('highlight-update');
-        }, 2500); 
-    }
-}
+                        // ลบ Class ออกหลังจาก 2.5 วินาที (เท่ากับเวลาใน CSS)
+                        setTimeout(function() {
+                            targetRow.removeClass('highlight-update');
+                        }, 2500);
+                    }
+                }
             });
         </script>
-    @endpush
+    @endpush --}}
 @endsection

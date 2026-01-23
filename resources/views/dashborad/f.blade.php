@@ -105,9 +105,10 @@
         }
 
         .badge-status {
-            min-width: 110px; /* เพิ่มความกว้างนิดหน่อยให้ข้อความยาวๆ ไม่ตกบรรทัด */
+            min-width: 120px;
             font-weight: 500;
-            padding: 0.5em 0.7em;
+            padding: 0.6em 0.8em;
+            border-radius: 6px;
         }
 
         .dataTables_wrapper .dataTables_filter {
@@ -145,7 +146,7 @@
                 <div class="card border-0 shadow-sm" style="border-radius: 12px; border-left: 4px solid #198754;">
                     <div class="card-body p-3 text-center text-md-start">
                         <small class="text-muted d-block text-success">ปิดงานแล้ว</small>
-                        <span class="h5 fw-bold text-success">{{ number_format($completedCount ?? 0) }}</span> {{-- แก้ไขตัวแปรตรงนี้ถ้ามี --}}
+                        <span class="h5 fw-bold text-success">{{ number_format($completedCount ?? 0) }}</span>
                     </div>
                 </div>
             </div>
@@ -175,8 +176,9 @@
                     <div class="d-none d-md-block">
                         <select name="status" class="form-select google-search-select status-trigger">
                             <option value="">ทุกสถานะ</option>
-                            @foreach (['ยังไม่ได้รับของ', 'ได้รับของแล้ว', 'ส่งSuplierแล้ว', 'กำลังดำเนินการซ่อม | ช่างStore', 'ซ่อมงานเสร็จแล้ว | ช่างStore', 'ซ่อมงานเสร็จแล้ว | Supplier', 'ปิดงานเรียบร้อย'] as $st)
-                                <option value="{{ $st }}" {{ request('status') == $st ? 'selected' : '' }}>
+                            @foreach (['ยังไม่ได้รับของ', 'ได้รับของแล้ว', 'ส่งSuplierแล้ว', 'กำลังดำเนินการซ่อม', 'ซ่อมงานเสร็จแล้ว', 'ปิดงานเรียบร้อย'] as $st)
+                                {{-- ใช้ str_contains เพื่อให้ค้นหาได้กว้างขึ้นใน value แต่โชว์ข้อความสั้นๆ --}}
+                                <option value="{{ $st }}" {{ str_contains(request('status'), $st) ? 'selected' : '' }}>
                                     {{ Str::limit($st, 25) }}
                                 </option>
                             @endforeach
@@ -192,8 +194,8 @@
                 <div class="d-md-none mt-3 px-2 w-100">
                     <select name="status" class="form-select border-0 shadow-sm status-trigger" style="border-radius: 20px;">
                         <option value="">สถานะ: ทั้งหมด</option>
-                        @foreach (['ยังไม่ได้รับของ', 'ได้รับของแล้ว', 'ส่งSuplierแล้ว', 'กำลังดำเนินการซ่อม | ช่างStore', 'ซ่อมงานเสร็จแล้ว | ช่างStore', 'ซ่อมงานเสร็จแล้ว | Supplier', 'ปิดงานเรียบร้อย'] as $st)
-                            <option value="{{ $st }}" {{ request('status') == $st ? 'selected' : '' }}>
+                        @foreach (['ยังไม่ได้รับของ', 'ได้รับของแล้ว', 'ส่งSuplierแล้ว', 'กำลังดำเนินการซ่อม', 'ซ่อมงานเสร็จแล้ว', 'ปิดงานเรียบร้อย'] as $st)
+                            <option value="{{ $st }}" {{ str_contains(request('status'), $st) ? 'selected' : '' }}>
                                 {{ $st }}
                             </option>
                         @endforeach
@@ -214,7 +216,7 @@
                                 <th style="width: 10%;">สาขา</th>
                                 <th class="text-start" style="width: 15%;">อุปกรณ์</th>
                                 <th >รายละเอียด</th> 
-                                <th style="width: 12%;">สถานะปัจจุบัน</th>
+                                <th style="width: 14%;">สถานะปัจจุบัน</th>
                                 <th style="width: 8%;">วันที่รับของซ่อม</th>
                                 <th style="width: 8%;">ผู้รับของซ่อม</th>
                                 <th style="width: 6%;">อัปเดตล่าสุด</th>
@@ -225,16 +227,35 @@
                             @forelse ($jobs as $job)
                                 @php
                                     $currentStatus = trim($job->current_status);
-                                    // Logic ปรับปรุงใหม่
-                                    $statusStyle = match (true) {
-                                        str_contains($currentStatus, 'ปฏิเสธ') => ['bg' => 'danger', 'icon' => 'bi-x-circle-fill', 'text' => 'white'],
-                                        $currentStatus === 'ยังไม่ได้รับของ' => ['bg' => 'secondary', 'icon' => 'bi-hourglass', 'text' => 'white'],
-                                        $currentStatus === 'ได้รับของแล้ว' => ['bg' => 'primary', 'icon' => 'bi-box-seam', 'text' => 'white'],
-                                        str_contains($currentStatus, 'ส่งSuplier') || str_contains($currentStatus, 'Supplier') => ['bg' => 'info', 'icon' => 'bi-truck', 'text' => 'dark'],
-                                        str_contains($currentStatus, 'กำลังดำเนินการ') => ['bg' => 'warning', 'icon' => 'bi-tools', 'text' => 'dark'],
-                                        str_contains($currentStatus, 'ซ่อมงานเสร็จ') => ['bg' => 'success', 'icon' => 'bi-check-circle', 'text' => 'white'],
-                                        $currentStatus === 'ปิดงานเรียบร้อย' => ['bg' => 'success', 'icon' => 'bi-check-all', 'text' => 'white'],
-                                        default => ['bg' => 'light', 'icon' => 'bi-question-circle', 'text' => 'dark'],
+                                    
+                                    // --- LOGIC สถานะแบบใหม่ (Group คำที่คล้ายกัน) ---
+                                    $statusConfig = match (true) {
+                                        // 1. ยกเลิก / ปฏิเสธ
+                                        str_contains($currentStatus, 'ปฏิเสธ') || str_contains($currentStatus, 'ยกเลิก')
+                                            => ['bg' => 'danger', 'icon' => 'bi-x-circle-fill', 'text' => 'white', 'border' => '#dc3545'],
+
+                                        // 2. ปิดงานแล้ว (จบกระบวนการ)
+                                        str_contains($currentStatus, 'ปิดงาน') 
+                                            => ['bg' => 'success', 'icon' => 'bi-check-circle-fill', 'text' => 'white', 'border' => '#198754'],
+
+                                        // 3. ซ่อมเสร็จ (รอส่งคืน หรือ รออนุมัติปิดงาน)
+                                        str_contains($currentStatus, 'ซ่อมงานเสร็จ') || str_contains($currentStatus, 'รอส่งคืน')
+                                            => ['bg' => 'success', 'icon' => 'bi-check-circle', 'text' => 'white', 'border' => '#198754'],
+
+                                        // 4. Supplier / ภายนอก
+                                        str_contains($currentStatus, 'Supplier') || str_contains($currentStatus, 'Suplier') || str_contains($currentStatus, 'ส่งภายนอก')
+                                            => ['bg' => 'info', 'icon' => 'bi-truck', 'text' => 'dark', 'border' => '#0dcaf0'],
+
+                                        // 5. กำลังซ่อม / ดำเนินการ (ภายใน)
+                                        str_contains($currentStatus, 'กำลังดำเนินการ') || str_contains($currentStatus, 'ช่าง')
+                                            => ['bg' => 'warning', 'icon' => 'bi-tools', 'text' => 'dark', 'border' => '#ffc107'],
+
+                                        // 6. รับของแล้ว (อยู่ในคิว)
+                                        $currentStatus === 'ได้รับของแล้ว' || str_contains($currentStatus, 'รับของ')
+                                            => ['bg' => 'primary', 'icon' => 'bi-box-seam', 'text' => 'white', 'border' => '#0d6efd'],
+
+                                        // Default: ยังไม่รับ / รอดำเนินการ
+                                        default => ['bg' => 'secondary', 'icon' => 'bi-hourglass-split', 'text' => 'white', 'border' => '#6c757d'],
                                     };
                                 @endphp
                                 <tr>
@@ -260,8 +281,8 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <span class="badge badge-status bg-{{ $statusStyle['bg'] }} text-{{ $statusStyle['text'] }} shadow-sm">
-                                            <i class="{{ $statusStyle['icon'] }} me-1"></i> {{ $currentStatus }}
+                                        <span class="badge badge-status bg-{{ $statusConfig['bg'] }} text-{{ $statusConfig['text'] }} shadow-sm border border-white">
+                                            <i class="{{ $statusConfig['icon'] }} me-1"></i> {{ $currentStatus }}
                                         </span>
                                     </td>
                                     <td>
@@ -313,27 +334,34 @@
                 @php
                     $currentStatus = trim($job->current_status);
                     
-                    // ใช้ Logic เดียวกับ Desktop เพื่อความสม่ำเสมอ
-                    $statusStyle = match (true) {
-                        str_contains($currentStatus, 'ปฏิเสธ') => ['bg' => 'danger', 'color' => '#dc3545', 'text' => 'text-danger'],
-                        $currentStatus === 'ยังไม่ได้รับของ' => ['bg' => 'secondary', 'color' => '#6c757d', 'text' => 'text-secondary'],
-                        $currentStatus === 'ได้รับของแล้ว' => ['bg' => 'primary', 'color' => '#0d6efd', 'text' => 'text-primary'],
-                        str_contains($currentStatus, 'ส่งSuplier') || str_contains($currentStatus, 'Supplier') => ['bg' => 'info', 'color' => '#0dcaf0', 'text' => 'text-info'],
-                        str_contains($currentStatus, 'กำลังดำเนินการ') => ['bg' => 'warning', 'color' => '#ffc107', 'text' => 'text-warning'],
-                        str_contains($currentStatus, 'ซ่อมงานเสร็จ') => ['bg' => 'success', 'color' => '#198754', 'text' => 'text-success'],
-                        $currentStatus === 'ปิดงานเรียบร้อย' => ['bg' => 'success', 'color' => '#198754', 'text' => 'text-success'],
-                        default => ['bg' => 'light', 'color' => '#f8f9fa', 'text' => 'text-dark'],
+                    // --- ใช้ Logic เดียวกับ Desktop ---
+                    $statusConfig = match (true) {
+                        str_contains($currentStatus, 'ปฏิเสธ') || str_contains($currentStatus, 'ยกเลิก')
+                            => ['bg' => 'danger', 'icon' => 'bi-x-circle-fill', 'text' => 'text-danger', 'border' => '#dc3545', 'badge_text' => 'white'],
+
+                        str_contains($currentStatus, 'ปิดงาน') 
+                            => ['bg' => 'success', 'icon' => 'bi-check-circle-fill', 'text' => 'text-success', 'border' => '#198754', 'badge_text' => 'white'],
+
+                        str_contains($currentStatus, 'ซ่อมงานเสร็จ') || str_contains($currentStatus, 'รอส่งคืน')
+                            => ['bg' => 'success', 'icon' => 'bi-check-circle', 'text' => 'text-success', 'border' => '#198754', 'badge_text' => 'white'],
+
+                        str_contains($currentStatus, 'Supplier') || str_contains($currentStatus, 'Suplier')
+                            => ['bg' => 'info', 'icon' => 'bi-truck', 'text' => 'text-info', 'border' => '#0dcaf0', 'badge_text' => 'dark'],
+
+                        str_contains($currentStatus, 'กำลังดำเนินการ') || str_contains($currentStatus, 'ช่าง')
+                            => ['bg' => 'warning', 'icon' => 'bi-tools', 'text' => 'text-warning', 'border' => '#ffc107', 'badge_text' => 'dark'],
+
+                        $currentStatus === 'ได้รับของแล้ว' 
+                            => ['bg' => 'primary', 'icon' => 'bi-box-seam', 'text' => 'text-primary', 'border' => '#0d6efd', 'badge_text' => 'white'],
+
+                        default => ['bg' => 'secondary', 'icon' => 'bi-hourglass-split', 'text' => 'text-secondary', 'border' => '#6c757d', 'badge_text' => 'white'],
                     };
 
                     $isClosed = $job->closedJobs !== 'ยังไม่ปิดงาน';
-                    // ใช้สีจาก statusStyle เป็น border color
-                    $borderColor = $statusStyle['color']; 
-                    // ถ้าสีอ่อนไป (เช่น light) ให้ใช้สีเทา
-                    if($statusStyle['bg'] == 'light') $borderColor = '#dee2e6';
                 @endphp
 
                 <div class="card mb-3 border-0 shadow-sm"
-                    style="border-radius: 15px; border-left: 5px solid {{ $borderColor }} !important;">
+                    style="border-radius: 15px; border-left: 5px solid {{ $statusConfig['border'] }} !important;">
                     <div class="card-body p-3">
                         <div class="d-flex justify-content-between align-items-start mb-2">
                             <div>
@@ -345,9 +373,9 @@
 
                         <div class="mb-2 small">
                             <span class="text-muted">สถานะ:</span>
-                            {{-- ใช้ class สีจาก logic --}}
-                            <span class="fw-bold {{ $statusStyle['text'] == 'text-warning' || $statusStyle['text'] == 'text-info' ? 'text-dark' : $statusStyle['text'] }}">
-                                {{ $job->current_status }}
+                            {{-- กรณีสีเหลือง/ฟ้า ให้ใช้ text-dark เพื่อให้อ่านง่าย ถ้าสีเข้มใช้สีตาม status --}}
+                            <span class="badge bg-{{ $statusConfig['bg'] }} text-{{ $statusConfig['badge_text'] }} fw-normal">
+                                <i class="{{ $statusConfig['icon'] }}"></i> {{ $currentStatus }}
                             </span>
                         </div>
 
@@ -397,57 +425,23 @@
         </div>
     </div>
 
-    {{-- @push('scripts')
+    @push('scripts')
         <script>
             $(document).ready(function() {
-                // 1. Script สำหรับสั่ง Submit Form เมื่อเลือก Dropdown สถานะ
+                // 1. สั่ง Submit Form อัตโนมัติเมื่อเลือก Dropdown
                 $('.status-trigger').on('change', function() {
                     $('#searchForm').submit();
                 });
 
-                // 2. DataTables Script
+                // 2. ตั้งค่า DataTables (เฉพาะ Desktop)
                 if ($('#officeTrackingTable').length > 0 && window.innerWidth >= 768) {
                     var table = $('#officeTrackingTable').DataTable({
-                        "paging": false, 
+                        "paging": false,
                         "info": false, 
                         "searching": false, 
                         "ordering": true, 
                         "order": [
-                            [6, "desc"] // Sort วันที่รับของล่าสุดก่อน
-                        ], 
-                        "autoWidth": false,
-                        "responsive": true,
-                        "language": {
-                            "emptyTable": "ไม่พบข้อมูลรายการแจ้งซ่อม",
-                            "zeroRecords": "ไม่พบข้อมูลที่ตรงกัน"
-                        }
-                    });
-                    $('#officeTrackingTable thead th').addClass('text-center align-middle');
-                }
-            });
-        </script>
-    @endpush --}}
-    @push('scripts')
-        <script>
-            $(document).ready(function() {
-                // ---------------------------------------------
-                // ส่วนที่ 1: สั่ง Submit Form อัตโนมัติเมื่อเลือก Dropdown
-                // ---------------------------------------------
-                $('.status-trigger').on('change', function() {
-                    $('#searchForm').submit();
-                });
-
-                // ---------------------------------------------
-                // ส่วนที่ 2: ตั้งค่า DataTables (เฉพาะ Desktop)
-                // ---------------------------------------------
-                if ($('#officeTrackingTable').length > 0 && window.innerWidth >= 768) {
-                    var table = $('#officeTrackingTable').DataTable({
-                        "paging": false,       // ปิด Paging ของ DataTable (ใช้ของ Laravel แทน)
-                        "info": false,         // ปิด text บอกจำนวน row ด้านล่าง
-                        "searching": false,    // ปิดช่องค้นหาของ DataTable (ใช้ Google Search Bar แทน)
-                        "ordering": true,      // เปิดให้เรียงลำดับได้
-                        "order": [
-                            [6, "desc"]        // ตั้งค่าเริ่มต้นให้เรียงตามคอลัมน์ที่ 6 (อัปเดตล่าสุด) แบบ มาก->น้อย
+                            [6, "desc"] // เรียงตามวันที่รับของล่าสุดก่อน
                         ], 
                         "autoWidth": false,
                         "responsive": true,
@@ -457,7 +451,6 @@
                         }
                     });
                     
-                    // จัดจัดตำแหน่ง Header ให้สวยงาม
                     $('#officeTrackingTable thead th').addClass('text-center align-middle');
                 }
             });

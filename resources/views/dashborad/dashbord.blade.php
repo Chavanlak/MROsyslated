@@ -108,7 +108,7 @@
 
     {{-- ส่วนที่ 2: กราฟแสดงผล (Chart Area) --}}
     <div class="row">
-        <div class="col-xl-8 col-lg-7">
+        <div class="col-xl-8 col-lg-7 my-4">
             <div class="card shadow-sm mb-4 border-0">
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between bg-white border-bottom-0">
                     <h6 class="m-0 fw-bold text-primary">สถิติการแจ้งซ่อม (รายเดือน)</h6>
@@ -122,7 +122,7 @@
         </div>
 
         {{-- ส่วนขวา: รายละเอียดเพิ่มเติม หรือ Pie Chart --}}
-        <div class="col-xl-4 col-lg-5">
+        {{-- <div class="col-xl-4 col-lg-5">
             <div class="card shadow-sm mb-4 border-0 text-white bg-primary">
                 <div class="card-body p-4">
                     <h5 class="fw-bold mb-3">ภาพรวมประสิทธิภาพ</h5>
@@ -138,7 +138,7 @@
                      </div>
                 </div>
             </div>
-        </div>
+        </div> --}}
     </div>
 </div>
 @endsection

@@ -202,9 +202,9 @@
             </button>
 
             {{-- ปุ่มค้นหา Mobile (แสดงเฉพาะ Mobile/Tablet) --}}
-            <button class="btn btn-link text-dark d-lg-none me-3 p-0 search-button-mobile" id="toggleSearch">
+            {{-- <button class="btn btn-link text-dark d-lg-none me-3 p-0 search-button-mobile" id="toggleSearch">
                 <i class="bi bi-search" style="font-size: 1.2rem;"></i>
-            </button>
+            </button> --}}
 
 
             {{-- โลโก้แบรนด์ --}}
@@ -212,47 +212,51 @@
                 {{-- <span>MRO</span> --}}
             </a>
 
-            {{-- ช่องค้นหา (แสดงบน Desktop และเปิดเมื่อกดปุ่มบน Mobile) --}}
+          
             <div class="search-container d-none d-lg-flex" id="searchContainer">
-                <form class="d-flex w-100" role="search" method="GET" action="{{ url('/noti') }}">
+                {{-- <form class="d-flex w-100" role="search" method="GET" action="{{ url('/noti') }}">
                     <div class="input-group">
                         <input class="form-control" type="search" name="search" placeholder="ค้นหา..."
                             aria-label="Search" style="min-width: 300px;" value="{{ request('search') }}">
 
-                        {{-- 1. ปุ่มค้นหา (Submit) --}}
+                   
                         <button class="btn btn-outline-secondary" type="submit">
                             <i class="bi bi-search"></i>
                         </button>
 
-                        {{-- 2. ปุ่มล้างการค้นหา (Clear Button) --}}
+                   
                         @if (request('search'))
                             <a href="{{ url('/noti') }}" class="btn btn-outline-danger" title="ล้างการค้นหา">
                                 <i class="bi bi-x-lg"></i>
                             </a>
                         @endif
 
-                        {{-- 3. ปุ่มปิดช่องค้นหา (Mobile only) --}}
                         <button class="btn btn-link text-dark d-lg-none" type="button" id="closeSearch">
                             <i class="bi bi-x-lg"></i>
                         </button>
 
                     </div>
-                </form>
+                </form> --}}
             </div>
 
             {{-- ส่วนผู้ใช้งาน/ล็อกเอาต์ --}}
             {{-- รหัสและชื่อสาขาของผู้ใช้งาน --}}
-            <div class="d-flex align-items-center me-3 d-none d-sm-flex">
+            {{-- <div class="d-flex align-items-center me-3 d-none d-sm-flex">
                 <i class="bi bi-shop me-2 text-muted"></i>
                 <div class="d-flex flex-column text-end" style="line-height: 1.2;">
-                    {{-- รหัสสาขา --}}
                     <strong class="text-dark small">
                         [{{ Session::get('branch_code', 'ไม่พบสาขา') }}]
                     </strong>
-                    {{-- ชื่อสาขา (ถ้ามี) --}}
-                    {{-- @if (Session::has('branch_name'))
-                                    <span class="text-muted smaller">{{ Session::get('branch_name') }}</span>
-                                @endif --}}
+                   
+                </div>
+            </div> --}}
+            {{-- nav bar สาขาด้านขวากับชื่อคน login --}}
+            <div class="d-flex align-items-center me-3 d-none d-sm-flex ms-auto">
+                <i class="bi bi-shop me-2 text-muted"></i>
+                <div class="d-flex flex-column text-end" style="line-height: 1.2;">
+                    <strong class="text-dark small">
+                        {{ Session::get('branch_code') }}
+                    </strong>
                 </div>
             </div>
 
@@ -354,29 +358,64 @@
                         href="{{ url('/countnotirpair') }}">
                         <i class="bi bi-speedometer2"></i> Dashboard
                     </a>
-                    <a class="nav-link {{ request()->is('notirepair') ? 'active' : '' }}"
-                        href="{{ url('/noti') }}">
+                    @php
+                        // ดึง Role จาก Session
+                        $role = Session::get('role');
+                        
+                        // ค่า Default
+                        $menuUrl = '#'; 
+                        $isActive = false;
+
+                        // 1. เช็คว่าเป็น ช่าง (AdminTechnicianStore)
+                        if ($role == 'AdminTechnicianStore') {
+                            $menuUrl = route('noti.list'); // ไป URL: /noti
+                            // เช็ค Active (รวมถึงหน้าย่อยๆ ของช่าง)
+                            $isActive = request()->routeIs('noti.list') || request()->is('noti/*') || request()->is('updatestatus/*');
+                        } 
+                        // 2. เช็คว่าเป็น หน้าร้าน (Frontstaff)
+                        elseif ($role == 'Frontstaff') {
+                            $menuUrl = route('noti.storefront'); // ไป URL: /noti/storefront
+                            $isActive = request()->routeIs('noti.storefront');
+                        } 
+                        // 3. เช็คว่าเป็น ธุรการ/ผู้บริหาร (AdminOfficer)
+                        elseif ($role == 'AdminOfficer') {
+                            $menuUrl = route('officer.tracking'); // ไป URL: /ofiicer
+                            $isActive = request()->routeIs('officer.tracking');
+                        }
+                        elseif ($role == 'Interior') {
+                            $menuUrl = route('interior.list'); // ไป URL: /interior.list
+                            $isActive = request()->routeIs('interior.list');
+                        }
+                     
+                    @endphp
+
+                    {{-- แสดงผลปุ่มเมนู --}}
+                    <a class="nav-link {{ $isActive ? 'active' : '' }}" href="{{ $menuUrl }}">
                         <i class="bi bi-list-task"></i> รายการแจ้งซ่อม
                     </a>
-                    <a class="nav-link {{ request()->is('notirepair/history') ? 'active' : '' }}"
+                    {{-- <a class="nav-link {{ request()->is('notirepair') ? 'active' : '' }}"
+                        href="{{ url('/noti') }}">
+                        <i class="bi bi-list-task"></i> รายการแจ้งซ่อม
+                    </a> --}}
+                    {{-- <a class="nav-link {{ request()->is('notirepair/history') ? 'active' : '' }}"
                         href="{{ url('/history') }}">
                         <i class="bi bi-clock-history"></i> ประวัติการแจ้งซ่อม
-                    </a>
+                    </a> --}}
 
-                    <a class="nav-link {{ request()->is('notirepair/sucess') ? 'active' : '' }}"
+                    {{-- <a class="nav-link {{ request()->is('notirepair/sucess') ? 'active' : '' }}"
                         href="{{ url('/noti/storefront') }}">
                         <i class="bi bi-box-seam"></i> สถานะรับของ
-                    </a>
-                    <a class="nav-link {{ request()->is('notirepair/statusrecive') ? 'active' : '' }}"
+                    </a> --}}
+                    {{-- <a class="nav-link {{ request()->is('notirepair/statusrecive') ? 'active' : '' }}"
                         href="{{ url('/notirepair/history') }}">
                         <i class="bi bi-check-circle"></i> สำเร็จเเล้ว
-                    </a>
-                    <a class="nav-link" href="#">
+                    </a> --}}
+                    {{-- <a class="nav-link" href="#">
                         <i class="bi bi-people"></i> ผู้ใช้งาน
-                    </a>
-                    <a class="nav-link" href="#">
+                    </a> --}}
+                    {{-- <a class="nav-link" href="#">
                         <i class="bi bi-gear"></i> ตั้งค่า
-                    </a>
+                    </a> --}}
                 </nav>
             </div>
 

@@ -13,66 +13,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     @endif
-    <div class="card-body p-3">
-        {{-- action="" ปล่อยว่างไว้เพื่อให้ส่งค่ากลับมาที่หน้าเดิม --}}
-        <form action="" method="GET">
-            <div class="row g-2 align-items-center">
 
-                {{-- 1. ช่องค้นหา (ปรับให้แคบลงเป็น col-lg-4 ตามที่ขอ) --}}
-                <div class="col-12 col-lg-4">
-                    <div class="input-group position-relative shadow-none border rounded-3">
-                        <span class="input-group-text bg-transparent border-0 pe-1">
-                            <i class="bi bi-search text-muted"></i>
-                        </span>
-                        <input type="text" name="search" class="form-control border-0 ps-2 pe-5"
-                            placeholder="ค้นหา รหัส, อุปกรณ์.." value="{{ request('search') }}"
-                            style="box-shadow: none; background: transparent;">
-                        
-                        {{-- ปุ่ม X สำหรับล้างคำค้นหา --}}
-                        @if(request('search'))
-                            <a href="{{ url()->current() }}" 
-                               class="position-absolute end-0 top-50 translate-middle-y me-2 text-muted"
-                               style="z-index: 5;">
-                                <i class="bi bi-x-circle-fill"></i>
-                            </a>
-                        @endif
-                    </div>
-                </div>
-
-                {{-- 2. ตัวเลือกสถานะ (ให้กว้างขึ้นเป็น col-lg-6 เพื่อให้อ่านสถานะยาวๆ ได้ครบ) --}}
-                <div class="col-8 col-lg-2">
-                    <select name="status" class="form-select border rounded-3 shadow-none">
-                        <option value="">ทุกสถานะ</option>
-                        @php
-                            $statuses = [
-                                'ยังไม่ได้รับของ', 
-                                'ได้รับของแล้ว', 
-                                'ส่งSuplierแล้ว', 
-                                'กำลังดำเนินการซ่อม | ช่างStore', 
-                                'ซ่อมงานเสร็จแล้ว | ช่างStore', 
-                                'ซ่อมงานเสร็จแล้ว | Supplier', 
-                                'ได้รับของคืนเรียบร้อย', 
-                                'ปฏิเสธการซ่อม'
-                            ];
-                        @endphp
-                        @foreach ($statuses as $st)
-                            <option value="{{ $st }}" {{ request('status') == $st ? 'selected' : '' }}>
-                                {{ $st }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                {{-- 3. ปุ่มค้นหา --}}
-                <div class="col-4 col-lg-1">
-                    <button type="submit" class="btn btn-primary w-100 fw-bold rounded-3">
-                        <i class="bi bi-search me-1"></i> ค้นหา
-                    </button>
-                </div>
-
-            </div>
-        </form>
-    </div>
     {{-- Desktop View --}}
     <div class="card shadow-sm d-none d-md-block border-0">
         <div class="card-body table-responsive">
@@ -201,7 +142,7 @@
             @php
                 $status = $item->status ?? 'ยังไม่ได้รับของ';
                 $isClosed = $item->closedJobs === 'ปิดงานเรียบร้อย';
-                $isRefused = str_contains($status, 'ปฏิเสธการซ่อม');
+                // $isRefused = str_contains($status, 'ปฏิเสธการซ่อม');
                 $isRepairFinished = str_contains($status, 'ซ่อมงานเสร็จแล้ว');
 
                 $themeColor = $isClosed
@@ -250,17 +191,16 @@
                             </div>
 
                             <div class="flex-shrink-0 ms-2">
-                                @if ($isClosed ||  $isRefused )
+                                @if ($isClosed)
                                     <span class="text-success small fw-bold"><i
-                                            {{-- class="bi bi-patch-check-fill me-1"></i>สำเร็จ</span> --}}
-                                            class="bi bi-patch-check-fill me-1"></i>ปิดงานเรียบร้อย</span>
+                                            class="bi bi-patch-check-fill me-1"></i>สำเร็จ</span>
                                 @elseif ($isRepairFinished)
                                     <button type="button" class="btn btn-sm px-3 py-1 fw-bold btn-receive-back"
                                         data-id="{{ $item->NotirepairId }}"
                                         data-jobid="{{ $item->JobId ?? $item->NotirepairId }}"
                                         data-name="{{ $item->equipmentName }}"
                                         style="background-color: #0dcaf0; color: white; border-radius: 8px; font-size: 0.8rem;">
-                                        รับของซ่อมคืน/ปิดงาน
+                                        รับของคืน
                                     </button>
                                 @else
                                     <span class="badge bg-light text-dark border">รอช่าง</span>
@@ -316,15 +256,13 @@
                 const equipName = $(this).data('name');
 
                 Swal.fire({
-                    // title: 'ยืนยันการรับของคืน?',
-                    title: 'ยืนยันการปิดงาน?',
+                    title: 'ยืนยันการรับของคืน?',
                     text: `รหัส ${jobId} (${equipName}) ซ่อมเสร็จและส่งคืนหน้าร้านแล้วใช่ไหม?`,
                     icon: 'question',
                     showCancelButton: true,
                     confirmButtonColor: '#0dcaf0',
                     cancelButtonColor: '#6c757d',
-                    // confirmButtonText: 'ใช่, รับของคืนแล้ว',
-                    confirmButtonText: 'ยืนยัน',
+                    confirmButtonText: 'ใช่, รับของคืนแล้ว',
                     cancelButtonText: 'ยกเลิก',
                     reverseButtons: true
                 }).then((result) => {

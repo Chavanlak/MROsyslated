@@ -158,7 +158,10 @@ Route::get('/success', function () {
 // ///dashbord หน้าร้าน
 // Route::get('/noti/storefront', [NotiRepairController::class, 'getNotiForStoreFront'])->name('noti.storefront');
 
-//old
+//interia
+// Route::get('/interia', function () {
+//     return view('dashborad.interia');
+// });//old
 Route::middleware(['RoleMiddleware:AdminTechnicianStore'])->group(function () {
     
     // หน้า Dashboard รายการแจ้งซ่อม
@@ -176,6 +179,59 @@ Route::middleware(['RoleMiddleware:AdminTechnicianStore'])->group(function () {
     
 
 });
+
+Route::middleware(['RoleMiddleware:Interior'])->group(function () {
+    
+    // Dashboard (อันนี้ถูกแล้ว)
+    Route::get('/interior/noti', [NotiRepairController::class, 'interiorNotiRepair'])->name('interior.list');
+
+    // --- แก้ URL ให้มี /interior นำหน้า และเปลี่ยนชื่อ Route ---
+    
+    // หน้าฟอร์มอัปเดตสถานะ (แก้ไข URL)
+    Route::get('/interior/updatestatus/form/{notirepaitid}', [NotiRepairController::class, 'showUpdateStatusForm'])->name('interior.show_update_form');
+    
+    // แก้ไขสถานะ (แก้ไข URL และเปลี่ยนชื่อเป็น interior.edit)
+    Route::get('/interior/noti/edit/{notirepaitid}', [NotiRepairController::class, 'editUpdateNoti'])->name('interior.edit');
+    
+    // ปุ่มบันทึก (แก้ไข URL)
+    Route::post('/interior/updaterecive', [NotiRepairController::class, 'updateStatus'])->name('interior.update');
+
+    // ปุ่มรับงาน/ปฏิเสธงาน (แก้ไข URL)
+    Route::post('/interior/noti/accept/{notirepaitid}', [NotiRepairController::class, 'acceptNotisRepair'])->name('interior.accept');
+    Route::post('/interior/noti/reject/{notirepaitid}', [NotiRepairController::class, 'rejectNotisRepair'])->name('interior.reject');
+});
+
+
+// Route::middleware(['RoleMiddleware:Interior'])->group(function () {
+    
+//     // หน้า Dashboard ของ Interior (มีอยู่แล้ว)
+//     Route::get('/interior/noti', [NotiRepairController::class, 'interiorNotiRepair'])->name('interior.list');
+//     Route::get('/noti/edit/{notirepaitid}', [NotiRepairController::class, 'editUpdateNoti'])->name('noti.edit');
+
+//     // -------------------------------------------------------
+//     // [สิ่งที่ต้องเพิ่ม] เพื่อให้ Interior กดรับ/ปฏิเสธงานได้
+//     // -------------------------------------------------------
+//     Route::post('/noti/accept/{notirepaitid}', [NotiRepairController::class, 'acceptNotisRepair'])->name('noti.accept');
+//     Route::post('/noti/reject/{notirepaitid}', [NotiRepairController::class, 'rejectNotisRepair'])->name('noti.reject');
+
+//     // ส่วนอัปเดตสถานะ (มีอยู่แล้ว)
+//     Route::get('/updatestatus/form/{notirepaitid}', [NotiRepairController::class, 'showUpdateStatusForm'])->name('noti.show_update_form');
+//     Route::post('/updaterecive', [NotiRepairController::class, 'updateStatus'])->name('notiupdate');
+// });
+
+// Route::get('/in', [NotiRepairController::class, 'interiorNotiRepair']);
+
+// Route::middleware(['RoleMiddleware:Interior'])->group(function () {
+    
+//     // หน้า Dashboard ของ Interior
+//     Route::get('/interior/noti', [NotiRepairController::class, 'interiorNotiRepair'])->name('interior.list');
+
+//     // ส่วน Action อื่นๆ (Update, Accept, Reject) ถ้าใช้ Logic เดียวกันกับช่าง 
+//     // คุณสามารถ Point ไปที่ function เดิมได้เลย แต่ต้องแน่ใจว่า function เหล่านั้น
+//     // ไม่ได้มีการเช็ค role ที่ปิดกั้น 'Interior' ไว้
+//     Route::get('/updatestatus/form/{notirepaitid}', [NotiRepairController::class, 'showUpdateStatusForm'])->name('noti.show_update_form');
+//     Route::post('/updaterecive', [NotiRepairController::class, 'updateStatus'])->name('notiupdate');
+// });
 
 Route::middleware(['RoleMiddleware:Frontstaff'])->group(function () {
 
@@ -206,7 +262,7 @@ Route::get('/ofiicer',[NotiRepairController::class,'officerTracking'])->name('of
 //     // เปิดให้หน้าร้านกดรับของได้เช่นกัน (ถ้า Controller logic รองรับ)
 //     Route::post('/noti/front-accept/{notirepaitid}', [NotiRepairController::class, 'acceptNotisRepair'])->name('noti.storefront.accept');
 // });
-Route::get('/ofiicer',[NotiRepairController::class,'officerTracking'])->name('officer.tracking')->middleware('RoleMiddleware:AdminOfficer');
+// Route::get('/ofiicer',[NotiRepairController::class,'officerTracking'])->name('officer.tracking')->middleware('RoleMiddleware:AdminOfficer');
 //new
 // ฝั่ง Admin Tech
 // Route::middleware(['RoleMiddleware:AdminTechnicianStore'])->group(function () {

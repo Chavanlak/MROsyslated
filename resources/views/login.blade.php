@@ -137,7 +137,8 @@
                     <option value="repair" selected>แจ้งซ่อม (Front Staff)</option>
                     <option value="storefront">หน้าร้าน/Dashboard (Front Staff)</option>
                     <option value="admintech">Dashboard(Admin ช่าง)</option>
-                    <option value="office">Dashboard(ธุรการ)</option>
+                    <option value="office">Dashboard(ธุรการ) Store</option>
+                    <option value="Interior">Dashboardb(Interior)</option>
                 </select>
             </div>
         

@@ -349,6 +349,7 @@ class NotirepairRepository
                 $query->where('latest_status.status', $statusFilter)
                     ->where('notirepair.closedJobs', '=', 'ยังไม่ปิดงาน');
             }
+        
         }
     
         return $query->orderBy('notirepair.DateNotirepair', 'desc')->paginate($perPage);
@@ -406,6 +407,7 @@ class NotirepairRepository
             ->orderBy('nr.DateNotirepair', 'desc')
             ->get();
     }
+    
     //15/1
     // public static function getTrackingListForAdmin($searchTerm = null, $statusFilter = null, $perPage = 10)
     // {
