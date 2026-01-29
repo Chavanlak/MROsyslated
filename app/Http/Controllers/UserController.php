@@ -191,7 +191,7 @@ class UserController extends Controller
             'storefront' => redirect()->route('noti.storefront'),
             'admintech'  => redirect()->route('noti.list'),
             'office'     => redirect()->route('officer.tracking'),
-            'Interior'     => redirect()->route('interior.list'),
+            'Interior'   => redirect()->route('interior.list'),
             default      => redirect('/'),
         };
     }

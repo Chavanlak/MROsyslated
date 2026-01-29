@@ -990,7 +990,6 @@ class NotiRepairController extends Controller
     {
         $search = $request->input('search');
         $status = $request->input('status');
-
         $jobs = NotirepairRepository::getTrackingListForAdmin($search, $status);
 
         // ยอดรวมทั้งหมด

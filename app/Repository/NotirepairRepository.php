@@ -293,68 +293,151 @@ class NotirepairRepository
     // }
 
     //15/1
-    public static function getTrackingListForAdmin($searchTerm = null, $statusFilter = null, $perPage = 10)
-    {
-        // 1) Subquery หาสถานะล่าสุด (เพื่อหาคนปิดงาน)
-        $latestStatusIdSub = DB::connection('third')->table('statustracking')
-            ->select('NotirepairId', DB::raw('MAX(statustrackingId) as max_id'))
-            ->groupBy('NotirepairId');
+    // public static function getTrackingListForAdmin($searchTerm = null, $statusFilter = null, $perPage = 10)
+    // {
+    //     // 1) Subquery หาสถานะล่าสุด (เพื่อหาคนปิดงาน)
+    //     $latestStatusIdSub = DB::connection('third')->table('statustracking')
+    //         ->select('NotirepairId', DB::raw('MAX(statustrackingId) as max_id'))
+    //         ->groupBy('NotirepairId');
     
-        // 2) Subquery คนรับของ
-        $receiverSub = DB::connection('third')->table('statustracking')
-            ->where('status', 'LIKE', '%ได้รับของ%')
-            ->select('NotirepairId', 'staffname as receiver_name');
+    //     // 2) Subquery คนรับของ
+    //     $receiverSub = DB::connection('third')->table('statustracking')
+    //         ->where('status', 'LIKE', '%ได้รับของ%')
+    //         ->select('NotirepairId', 'staffname as receiver_name');
     
-        // ✅ 3) เพิ่ม Subquery วันที่ได้รับของ (ดึง statusDate ของบรรทัด 'ได้รับของแล้ว')
-        $receivedDateSub = DB::connection('third')->table('statustracking')
-            ->where('status', 'ได้รับของแล้ว')
-            ->select('NotirepairId', 'statusDate as received_at');
+    //     // ✅ 3) เพิ่ม Subquery วันที่ได้รับของ (ดึง statusDate ของบรรทัด 'ได้รับของแล้ว')
+    //     $receivedDateSub = DB::connection('third')->table('statustracking')
+    //         ->where('status', 'ได้รับของแล้ว')
+    //         ->select('NotirepairId', 'statusDate as received_at');
     
-        $query = DB::connection('third')->table('notirepair')
-            ->select(
-                'notirepair.*',
-                'equipment.equipmentName',
-                'latest_status.status as db_status',
-                'latest_status.statusDate as last_update',
-                'latest_status.staffname as closer_name',
-                'rc.receiver_name',
-                // ✅ ดึงวันที่ได้รับของออกมาใช้
-                'rd.received_at', 
-                DB::raw("CASE 
-                    WHEN notirepair.closedJobs != 'ยังไม่ปิดงาน' THEN 'ปิดงานเรียบร้อย'
-                    ELSE COALESCE(latest_status.status, 'ยังไม่ได้รับของ')
-                END as current_status")
-            )
-            ->leftJoin('equipment', 'notirepair.equipmentId', '=', 'equipment.equipmentId')
-            ->leftJoinSub($latestStatusIdSub, 'ls_id', 'notirepair.NotirepairId', '=', 'ls_id.NotirepairId')
-            ->leftJoin('statustracking as latest_status', 'ls_id.max_id', '=', 'latest_status.statustrackingId')
-            ->leftJoinSub($receiverSub, 'rc', 'notirepair.NotirepairId', '=', 'rc.NotirepairId')
-            // ✅ Join เพื่อดึงวันที่รับของ
-            ->leftJoinSub($receivedDateSub, 'rd', 'notirepair.NotirepairId', '=', 'rd.NotirepairId');
+    //     $query = DB::connection('third')->table('notirepair')
+    //         ->select(
+    //             'notirepair.*',
+    //             'equipment.equipmentName',
+    //             'latest_status.status as db_status',
+    //             'latest_status.statusDate as last_update',
+    //             'latest_status.staffname as closer_name',
+    //             'rc.receiver_name',
+    //             // ✅ ดึงวันที่ได้รับของออกมาใช้
+    //             'rd.received_at', 
+    //             DB::raw("CASE 
+    //                 WHEN notirepair.closedJobs != 'ยังไม่ปิดงาน' THEN 'ปิดงานเรียบร้อย'
+    //                 ELSE COALESCE(latest_status.status, 'ยังไม่ได้รับของ')
+    //             END as current_status")
+    //         )
+    //         ->leftJoin('equipment', 'notirepair.equipmentId', '=', 'equipment.equipmentId')
+    //         ->leftJoinSub($latestStatusIdSub, 'ls_id', 'notirepair.NotirepairId', '=', 'ls_id.NotirepairId')
+    //         ->leftJoin('statustracking as latest_status', 'ls_id.max_id', '=', 'latest_status.statustrackingId')
+    //         ->leftJoinSub($receiverSub, 'rc', 'notirepair.NotirepairId', '=', 'rc.NotirepairId')
+    //         // ✅ Join เพื่อดึงวันที่รับของ
+    //         ->leftJoinSub($receivedDateSub, 'rd', 'notirepair.NotirepairId', '=', 'rd.NotirepairId');
     
-        // ... (ส่วน Filter searchTerm และ statusFilter เหมือนเดิมของคุณ) ...
-        if ($searchTerm) {
-            $query->where(function ($q) use ($searchTerm) {
-                $q->where('notirepair.NotirepairId', 'like', "%$searchTerm%")
-                    ->orWhere('notirepair.branchCode', 'like', "%$searchTerm%")
-                    ->orWhere('notirepair.DeatailNotirepair', 'like', "%$searchTerm%")
-                    ->orWhere('equipment.equipmentName', 'like', "%$searchTerm%");
-            });
-        }
+    //     // ... (ส่วน Filter searchTerm และ statusFilter เหมือนเดิมของคุณ) ...
+    //     if ($searchTerm) {
+    //         $query->where(function ($q) use ($searchTerm) {
+    //             $q->where('notirepair.NotirepairId', 'like', "%$searchTerm%")
+    //                 ->orWhere('notirepair.branchCode', 'like', "%$searchTerm%")
+    //                 ->orWhere('notirepair.DeatailNotirepair', 'like', "%$searchTerm%")
+    //                 ->orWhere('equipment.equipmentName', 'like', "%$searchTerm%");
+    //         });
+    //     }
     
-        if ($statusFilter) {
-            if ($statusFilter === 'ปิดงานเรียบร้อย') {
-                $query->where('notirepair.closedJobs', '!=', 'ยังไม่ปิดงาน');
-            } else {
-                $query->where('latest_status.status', $statusFilter)
-                    ->where('notirepair.closedJobs', '=', 'ยังไม่ปิดงาน');
-            }
+    //     if ($statusFilter) {
+    //         if ($statusFilter === 'ปิดงานเรียบร้อย') {
+    //             $query->where('notirepair.closedJobs', '!=', 'ยังไม่ปิดงาน');
+    //         } else {
+    //             $query->where('latest_status.status', $statusFilter)
+    //                 ->where('notirepair.closedJobs', '=', 'ยังไม่ปิดงาน');
+    //         }
         
-        }
+    //     }
     
-        return $query->orderBy('notirepair.DateNotirepair', 'desc')->paginate($perPage);
+    //     return $query->orderBy('notirepair.DateNotirepair', 'desc')->paginate($perPage);
+    // }
+//29/1
+public static function getTrackingListForAdmin($searchTerm = null, $statusFilter = null, $perPage = 10)
+{
+    // 1) Subquery หาสถานะล่าสุด (เพื่อหาคนปิดงาน) - อันนี้ถูกต้องแล้ว
+    $latestStatusIdSub = DB::connection('third')->table('statustracking')
+        ->select('NotirepairId', DB::raw('MAX(statustrackingId) as max_id'))
+        ->groupBy('NotirepairId');
+
+    // 2) Subquery คนรับของ (แก้ไข: เพิ่ม groupBy และเลือกชื่อล่าสุดโดยประมาณ)
+    $receiverSub = DB::connection('third')->table('statustracking')
+        ->where('status', 'LIKE', '%ได้รับของ%')
+        ->select('NotirepairId', DB::raw('MAX(staffname) as receiver_name')) // ใช้ MAX เพื่อแก้ปัญหา SQL Strict Mode และขจัดตัวซ้ำ
+        ->groupBy('NotirepairId');
+
+    // 3) Subquery วันที่ได้รับของ (แก้ไข: เพิ่ม groupBy และเลือกวันที่ล่าสุด)
+    $receivedDateSub = DB::connection('third')->table('statustracking')
+        ->where('status', 'ได้รับของแล้ว')
+        ->select('NotirepairId', DB::raw('MAX(statusDate) as received_at'))
+        ->groupBy('NotirepairId');
+
+    $query = DB::connection('third')->table('notirepair')
+        ->select(
+            'notirepair.*',
+            'equipment.equipmentName',
+            'latest_status.status as db_status',
+            'latest_status.statusDate as last_update',
+            'latest_status.staffname as closer_name',
+            'rc.receiver_name',
+            'rd.received_at', 
+            DB::raw("CASE 
+                WHEN notirepair.closedJobs != 'ยังไม่ปิดงาน' THEN 'ปิดงานเรียบร้อย'
+                ELSE COALESCE(latest_status.status, 'ยังไม่ได้รับของ')
+            END as current_status")
+        )
+        ->leftJoin('equipment', 'notirepair.equipmentId', '=', 'equipment.equipmentId')
+        ->leftJoinSub($latestStatusIdSub, 'ls_id', 'notirepair.NotirepairId', '=', 'ls_id.NotirepairId')
+        ->leftJoin('statustracking as latest_status', 'ls_id.max_id', '=', 'latest_status.statustrackingId')
+        // Join กับ Subquery ที่แก้แล้ว
+        ->leftJoinSub($receiverSub, 'rc', 'notirepair.NotirepairId', '=', 'rc.NotirepairId')
+        ->leftJoinSub($receivedDateSub, 'rd', 'notirepair.NotirepairId', '=', 'rd.NotirepairId');
+
+    // ... (ส่วน Filter searchTerm และ statusFilter คงเดิม) ...
+    if ($searchTerm) {
+        $query->where(function ($q) use ($searchTerm) {
+            $q->where('notirepair.NotirepairId', 'like', "%$searchTerm%")
+                ->orWhere('notirepair.branchCode', 'like', "%$searchTerm%")
+                ->orWhere('notirepair.DeatailNotirepair', 'like', "%$searchTerm%")
+                ->orWhere('equipment.equipmentName', 'like', "%$searchTerm%");
+        });
     }
 
+    // if ($statusFilter) {
+    //     if ($statusFilter === 'ปิดงานเรียบร้อย') {
+    //         $query->where('notirepair.closedJobs', '!=', 'ยังไม่ปิดงาน');
+    //     } else {
+    //         $query->where('latest_status.status', $statusFilter)
+    //             ->where('notirepair.closedJobs', '=', 'ยังไม่ปิดงาน');
+    //     }
+    // }
+    if ($statusFilter && $statusFilter !== 'ทุกสถานะ') {
+        if ($statusFilter === 'ปิดงานเรียบร้อย') {
+            // 1. ปิดงานเรียบร้อย (ดูจากฟิลด์ closedJobs)
+            $query->where('notirepair.closedJobs', '!=', 'ยังไม่ปิดงาน');
+        } 
+        else if ($statusFilter === 'ยังไม่ได้รับของ') {
+            // 2. ยังไม่ได้รับของ (ต้องเอาตัวที่เป็น NULL และตัวที่เขียนว่า 'ยังไม่ได้รับของ' มารวมกัน)
+            $query->where('notirepair.closedJobs', '=', 'ยังไม่ปิดงาน')
+                  ->where(function($q) {
+                      $q->where('latest_status.status', '=', 'ยังไม่ได้รับของ')
+                        ->orWhereNull('latest_status.status');
+                  });
+        }
+        else {
+            // 3. สถานะอื่นๆ ที่เหลือ (ต้องตรงกับตัวหนังสือใน Dropdown เป๊ะๆ)
+            // เช่น: ได้รับของแล้ว, ส่งSuplierแล้ว, กำลังดำเนินการซ่อม | ช่างStore, 
+            // ซ่อมงานเสร็จแล้ว | ช่างStore, ซ่อมงานเสร็จแล้ว | Supplier, 
+            // ได้รับของคืนเรียบร้อย, ปฏิเสธการซ่อม
+            $query->where('latest_status.status', '=', $statusFilter)
+                  ->where('notirepair.closedJobs', '=', 'ยังไม่ปิดงาน');
+        }
+    }
+
+    return $query->orderBy('notirepair.DateNotirepair', 'desc')->paginate($perPage);
+}
     // public static function findBranchName()
     // {
     //     // กำหนดชื่อฐานข้อมูล (สมมติชื่อ db_secondary และ db_third)
